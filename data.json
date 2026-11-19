@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-19T19:31:35.315Z",
+  "updatedAt": "2026-11-19T19:33:00.294Z",
   "keywords": [
     {
       "name": "RAID",
@@ -38,6 +38,35 @@
           "done": false
         }
       ],
+      "notes": ""
+    },
+    {
+      "id": "mbk5tyq5",
+      "number": "3",
+      "name": "",
+      "atlasPage": "",
+      "options": [
+        {
+          "keywords": [
+            "SHELL"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [
+            "MIGHT"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [],
+          "done": false,
+          "note": "Pann Traders"
+        }
+      ],
+      "quests": [],
       "notes": ""
     }
   ]
