@@ -4,12 +4,12 @@ A single-page tracker for our Sleeping Gods campaign: the keywords we have, the 
 
 - `index.html` is the whole app (no build step).
 - `data.json` holds the campaign data. Every save from the page commits this file.
-- `atlas.json` maps every location number on the map to its atlas page and, for named places, its name, e.g. `"130": { "page": "2", "name": "Zikura Trading Post" }`. When you add a location, the page and name are filled in from this file unless you type your own. The data was extracted from the fan-made Sleeping Gods map PDF on BoardGameGeek: 203 locations, including the `R`-numbered ones.
+- `atlas.json` maps every location number on the map to its atlas page and, for named places, its name, e.g. `"130": { "page": "2", "name": "Zikura Trading Post", "port": true }`, with `"dungeon": true` on the six dungeon locations. When you add a location, the page and name are filled in from this file unless you type your own. The data was extracted from the fan-made Sleeping Gods map PDF on BoardGameGeek: 203 locations, including the `R`-numbered ones.
 
 ## What it tracks
 
 - **Keywords & quests**: every quest is a keyword plus its quest card number (leave the number empty if you don't know it yet). Each keyword records the location it was gained at and the locations whose options use it. Tick a keyword off when its quest is complete; a completed keyword still counts as one we have.
-- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location can also hold **adventure cards**, each with a card number and a name. Locations with a dungeon (Dungeons expansion: 52, 92, 104, 146, 181, 217) get a dungeon marker automatically, with a tick for when the dungeon is done. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
+- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location can also hold **adventure cards**, each with a card number and a name. Locations with a dungeon (Dungeons expansion: 52, 92, 104, 146, 181, 217) get a dungeon marker automatically, with a tick for when the dungeon is done. Ports (the 19 places with a building icon on the map, e.g. 130 Zikura Trading Post) get `Port: <name>` at the top of their notes when you add them. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
 
 Status is worked out automatically:
 
@@ -21,7 +21,7 @@ Status is worked out automatically:
 
 Locations can be sorted by number, atlas page, status, recently added or recently modified (saving a location or ticking one of its options or its dungeon counts as a change).
 
-The overview lists locations we can go back to, the keywords we're still looking for, and open quests by card number.
+The overview lists locations we can go back to, the adventure cards we've collected, the keywords we're still looking for, and open quests by card number.
 
 ## Hosting on GitHub Pages
 
