@@ -9,13 +9,13 @@ A single-page tracker for our Sleeping Gods campaign: the keywords we have, the 
 ## What it tracks
 
 - **Keywords & quests**: every quest is a keyword plus its quest card number (leave the number empty if you don't know it yet). Each keyword records the location it was gained at and the locations whose options use it. Tick a keyword off when its quest is complete; a completed keyword still counts as one we have.
-- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
+- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location can also hold **adventure cards** (by card number), each ticked off when done. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
 
 Status is worked out automatically:
 
 | Status | Meaning |
 | --- | --- |
-| Ready | At least one option isn't ticked off and we have every keyword it needs (or it needs none). |
+| Ready | An option isn't ticked off and we have every keyword it needs (or it needs none), or an adventure card there isn't done yet. |
 | Needs keyword | Options remain, but each one needs a keyword we don't have yet. |
 | Done | Every option is ticked off. |
 
