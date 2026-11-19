@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-19T19:50:21.516Z",
+  "updatedAt": "2026-11-19T19:51:47.249Z",
   "keywords": [
     {
       "name": "RAID",
@@ -39,7 +39,7 @@
     },
     {
       "name": "BARNACLE",
-      "quest": "",
+      "quest": "37",
       "done": false,
       "gainedAt": "36",
       "note": ""
@@ -52,7 +52,10 @@
       "name": "",
       "atlasPage": "2",
       "options": [],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "mbk5tyq5",
@@ -80,7 +83,10 @@
           "note": "Pann Traders"
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "v4vxdqa4",
@@ -101,7 +107,10 @@
           "note": ""
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "0gvfx5mm",
@@ -109,7 +118,10 @@
       "name": "",
       "atlasPage": "4",
       "options": [],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "gk3pr04g",
@@ -125,7 +137,10 @@
           "note": ""
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "5tdt6djy",
@@ -153,7 +168,10 @@
           "note": ""
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "11tieuz1",
@@ -174,7 +192,10 @@
           "note": ""
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "z30no3qc",
@@ -195,7 +216,10 @@
           "note": ""
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     },
     {
       "id": "819ih7yj",
@@ -216,7 +240,10 @@
           "note": ""
         }
       ],
-      "notes": ""
+      "adventures": [],
+      "notes": "",
+      "created": "",
+      "updated": ""
     }
   ]
 }
