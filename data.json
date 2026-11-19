@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-19T19:51:47.249Z",
+  "updatedAt": "2026-11-19T19:59:53.442Z",
   "keywords": [
     {
       "name": "RAID",
@@ -118,10 +118,16 @@
       "name": "",
       "atlasPage": "4",
       "options": [],
-      "adventures": [],
+      "adventures": [
+        {
+          "card": "37",
+          "done": false,
+          "note": ""
+        }
+      ],
       "notes": "",
       "created": "",
-      "updated": ""
+      "updated": "2026-11-19T19:56:58.588Z"
     },
     {
       "id": "gk3pr04g",
@@ -137,10 +143,16 @@
           "note": ""
         }
       ],
-      "adventures": [],
+      "adventures": [
+        {
+          "card": "30",
+          "done": false,
+          "note": ""
+        }
+      ],
       "notes": "",
       "created": "",
-      "updated": ""
+      "updated": "2026-11-19T19:57:29.374Z"
     },
     {
       "id": "5tdt6djy",
