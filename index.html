@@ -159,6 +159,21 @@ button.tick:hover { border-color: var(--accent); }
 .meta { font-size: .88rem; color: var(--ink-2); }
 .push { margin-left: auto; }
 
+/* Keyword table */
+.kwtable { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.kwtable th, .kwtable td { padding: 9px 12px; text-align: left; vertical-align: middle; border-top: 1px solid var(--line); }
+.kwtable thead th { border-top: 0; font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.kwtable .c-tick, .kwtable .c-edit { width: 1%; }
+.kwtable .c-tick { padding-right: 0; }
+.kwtable .c-card { white-space: nowrap; font-weight: 600; font-variant-numeric: tabular-nums; }
+.kwtable .c-used .locref { margin: 2px 4px 2px 0; }
+.kwtable .c-note { font-size: .9rem; color: var(--ink-2); }
+.kwtable .blank { color: var(--muted); }
+.kwtable tr.group th { padding: 6px 12px; background: var(--surface-2); font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.kwtable tr.done .kw { opacity: .55; }
+.kwtable tr.done .c-card { color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 /* Location cards */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
 .card { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
@@ -212,6 +227,17 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
   .fields .wide { grid-column: 1 / -1; }
   .rows li { grid-template-columns: auto 1fr auto; grid-template-areas: "chk main x" ". extra extra"; }
   .search.short { flex: 1 1 120px; }
+  .kwtable, .kwtable tbody { display: block; }
+  .kwtable thead { display: none; }
+  .kwtable tr { display: grid; grid-template-columns: auto 1fr auto auto; grid-template-areas: "tick kw card edit" ". gained gained gained" ". used used used" ". note note note"; align-items: center; gap: 4px 10px; padding: 10px 12px; border-top: 1px solid var(--line); }
+  .kwtable tbody:first-of-type tr:first-child { border-top: 0; }
+  .kwtable td { padding: 0; border: 0; }
+  .kwtable .c-tick { grid-area: tick; display: flex; } .kwtable .c-kw { grid-area: kw; } .kwtable .c-card { grid-area: card; } .kwtable .c-edit { grid-area: edit; }
+  .kwtable .c-gained { grid-area: gained; } .kwtable .c-used { grid-area: used; } .kwtable .c-note { grid-area: note; }
+  .kwtable .blank { display: none; }
+  .kwtable td[data-label]::before { content: attr(data-label) " "; font-size: .85rem; font-weight: 400; color: var(--muted); }
+  .kwtable tr.group { display: block; padding: 6px 12px; background: var(--surface-2); }
+  .kwtable tr.group th { padding: 0; border: 0; background: none; }
   .tabs { padding: 0 6px; gap: 0; }
   .tabs button { padding-left: 8px; padding-right: 8px; font-size: .95rem; }
 }
@@ -561,22 +587,34 @@ function viewLocations(have) {
     <div id="locList">${locList(have)}</div>`;
 }
 
+function keywordTable(kws, have) {
+  const withNotes = kws.some(k => k.note);
+  const cell = (cls, label, html) => `<td class="${cls}${html ? '' : ' blank'}" data-label="${label}">${html || '—'}</td>`;
+  const row = k => `<tr class="${k.done ? 'done' : ''}">
+      <td class="c-tick">${kwTick(k)}</td>
+      <td class="c-kw">${kwChip(k.name, have)}</td>
+      <td class="c-card" data-label="Card">${k.quest ? `#${esc(k.quest)}` : '<span class="hint">?</span>'}</td>
+      ${cell('c-gained', 'Gained at', k.gainedAt && locRefByNumber(k.gainedAt))}
+      ${cell('c-used', 'Used at', usages(k.name).map(({ loc, o }) => locRef(loc, o.done)).join(''))}
+      ${withNotes ? cell('c-note', 'Note', esc(k.note)) : ''}
+      ${editing() ? `<td class="c-edit"><button class="link" data-action="edit-kw" data-kw="${esc(k.name)}">Edit</button></td>` : ''}
+    </tr>`;
+  const open = kws.filter(k => !k.done);
+  const done = kws.filter(k => k.done);
+  const cols = 5 + withNotes + editing();
+  return `<table class="kwtable">
+    <thead><tr>
+      <th class="c-tick"><span class="sr-only">Complete</span></th><th>Keyword</th><th>Card</th><th>Gained at</th><th>Used at</th>
+      ${withNotes ? '<th>Note</th>' : ''}${editing() ? '<th class="c-edit"><span class="sr-only">Edit</span></th>' : ''}
+    </tr></thead>
+    <tbody>${open.map(row).join('')}</tbody>
+    ${done.length ? `<tbody><tr class="group"><th colspan="${cols}">Complete · ${done.length}</th></tr>${done.map(row).join('')}</tbody>` : ''}
+  </table>`;
+}
+
 function viewKeywords(have) {
   const kws = [...data.keywords].sort(byQuest);
   const complete = kws.filter(k => k.done).length;
-  const rows = kws.map(k => {
-    const used = usages(k.name);
-    return `<li class="${k.done ? 'done' : ''}">
-      ${kwTick(k)}
-      ${kwChip(k.name, have)}
-      ${cardLabel(k)}
-      ${k.done ? '<span class="status cleared">Complete</span>' : ''}
-      ${k.gainedAt ? `<span class="meta">gained at ${locRefByNumber(k.gainedAt)}</span>` : ''}
-      ${used.length ? `<span class="meta">used at ${used.map(({ loc, o }) => locRef(loc, o.done)).join(' ')}</span>` : ''}
-      ${k.note ? `<span class="meta">· ${esc(k.note)}</span>` : ''}
-      ${editing() ? `<button class="link push" data-action="edit-kw" data-kw="${esc(k.name)}">Edit</button>` : ''}
-    </li>`;
-  }).join('');
   const add = editing() ? `<form class="toolbar" data-form="add-kw">
       <input class="search" name="kw" list="kwAll" required autocomplete="off" placeholder="New keyword" aria-label="New keyword">
       <input class="search short" name="quest" autocomplete="off" placeholder="Card #" aria-label="Quest card number (if known)">
@@ -584,7 +622,7 @@ function viewKeywords(have) {
       <button class="btn primary">Add keyword</button>
     </form>` : '';
   return `${add}
-    <section class="section"><h2>Keywords &amp; quests <small>${kws.length}${complete ? ` · ${complete} complete` : ''}</small></h2>${kws.length ? `<ul class="list">${rows}</ul>` : empty('No keywords yet.')}</section>
+    <section class="section"><h2>Keywords &amp; quests <small>${kws.length}${complete ? ` · ${complete} complete` : ''}</small></h2>${kws.length ? keywordTable(kws, have) : empty('No keywords yet.')}</section>
     <section class="section"><h2>Still looking for <small>needed by location options</small></h2>${wantedList(wantedKeywords(have), have)}</section>`;
 }
 
