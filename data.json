@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-19T19:59:53.442Z",
+  "updatedAt": "2026-11-19T20:08:26.087Z",
   "keywords": [
     {
       "name": "RAID",
@@ -54,6 +54,7 @@
       "options": [],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     },
@@ -85,6 +86,7 @@
       ],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     },
@@ -109,6 +111,7 @@
       ],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     },
@@ -121,11 +124,11 @@
       "adventures": [
         {
           "card": "37",
-          "done": false,
-          "note": ""
+          "name": ""
         }
       ],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": "2026-11-19T19:56:58.588Z"
     },
@@ -146,13 +149,13 @@
       "adventures": [
         {
           "card": "30",
-          "done": false,
-          "note": ""
+          "name": "Ratolde's Spear"
         }
       ],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
-      "updated": "2026-11-19T19:57:29.374Z"
+      "updated": "2026-11-19T20:03:11.482Z"
     },
     {
       "id": "5tdt6djy",
@@ -182,6 +185,7 @@
       ],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     },
@@ -206,6 +210,7 @@
       ],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     },
@@ -230,6 +235,7 @@
       ],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     },
@@ -254,6 +260,7 @@
       ],
       "adventures": [],
       "notes": "",
+      "dungeonDone": false,
       "created": "",
       "updated": ""
     }
