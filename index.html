@@ -760,6 +760,15 @@ function openLocDialog(id) {
   if (!loc) el.number.focus();
 }
 
+// A quest row's card # comes from the keyword list when the keyword is already known.
+function suggestCard(li) {
+  const card = li.querySelector('[name=qcard]');
+  if (card.value && !card.dataset.auto) return;
+  const k = data.keywords.find(x => x.name === norm(li.querySelector('[name=qkw]').value));
+  card.value = k?.quest ?? '';
+  card.dataset.auto = card.value ? '1' : '';
+}
+
 function suggestFromMap() {
   const el = $('#locForm').elements;
   const m = mapEntry(el.number.value);
@@ -794,7 +803,7 @@ function saveLocDialog() {
   for (const q of quests) {
     let k = data.keywords.find(x => x.name === q.name);
     if (!k) data.keywords.push(k = { name: q.name, quest: '', done: false, gainedAt: '', note: '' });
-    Object.assign(k, q, { gainedAt: number });
+    Object.assign(k, q, { quest: q.quest || k.quest, gainedAt: number });
   }
   if (i >= 0) data.locations[i] = loc; else data.locations.push(loc);
   commit();
@@ -1037,6 +1046,8 @@ document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e =
 document.addEventListener('input', e => {
   if (e.target.dataset.input === 'q') { ui.q = e.target.value; $('#locList').innerHTML = locList(owned()); }
   if (e.target === $('#locForm').elements.number) suggestFromMap();
+  if (e.target.name === 'qkw') suggestCard(e.target.closest('li'));
+  if (e.target.name === 'qcard') e.target.dataset.auto = '';
 });
 
 document.addEventListener('change', e => {
