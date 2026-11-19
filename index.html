@@ -401,6 +401,8 @@ function migrate(d) {
       options: (l.options ?? []).map(o => ({ keywords: (o.keywords ?? []).map(norm).filter(Boolean), done: !!o.done, note: o.note ?? '' })),
       adventures: (l.adventures ?? []).map(a => ({ card: cardNumber(a.card ?? ''), done: !!a.done, note: a.note ?? '' })).filter(a => a.card),
       notes,
+      created: l.created ?? '',
+      updated: l.updated ?? '',
     };
   });
   return { version: 2, updatedAt: d.updatedAt ?? null, keywords, locations };
@@ -546,6 +548,8 @@ function viewOverview(have) {
 
 function locCard(loc, have) {
   const st = locationStatus(loc, have);
+  const time = ui.sort === 'added' ? loc.created : ui.sort === 'modified' ? loc.updated || loc.created : '';
+  const sub = [atlasOf(loc) && `Atlas p. ${esc(atlasOf(loc))}`, time && `${ui.sort === 'added' ? 'added' : 'edited'} ${fmtDate(time)}`].filter(Boolean).join(' · ');
   const opts = loc.options.map((o, i) => {
     const s = optionState(o, have);
     return `<li class="${s}">
@@ -568,7 +572,7 @@ function locCard(loc, have) {
   return `<article class="card">
     <header>
       <span class="locnum">${esc(loc.number)}</span>
-      <div class="title"><h3>${locTitle(loc)}</h3>${atlasOf(loc) ? `<span class="atlas">Atlas p. ${esc(atlasOf(loc))}</span>` : ''}</div>
+      <div class="title"><h3>${locTitle(loc)}</h3>${sub ? `<span class="atlas">${sub}</span>` : ''}</div>
       <span class="status ${st}">${STATUS[st]}</span>
     </header>
     ${opts ? `<h4>Options</h4><ul>${opts}</ul>` : ''}
@@ -582,8 +586,13 @@ function locCard(loc, have) {
 function locList(have) {
   if (!data.locations.length) return empty(editing() ? 'No locations yet — add the first one you visited.' : 'No locations logged yet.');
   const status = l => locationStatus(l, have);
+  // Locations without timestamps predate them; array order is the order they were added.
+  const index = new Map(data.locations.map((l, i) => [l, i]));
+  const newest = time => (a, b) => (time(b) || '').localeCompare(time(a) || '') || index.get(b) - index.get(a);
   const sorters = {
     number: byNumber,
+    added: newest(l => l.created),
+    modified: newest(l => l.updated || l.created),
     atlas: (a, b) => (num(atlasOf(a)) - num(atlasOf(b))) || byNumber(a, b),
     status: (a, b) => (STATUS_ORDER[status(a)] - STATUS_ORDER[status(b)]) || byNumber(a, b),
   };
@@ -598,7 +607,7 @@ function viewLocations(have) {
   data.locations.forEach(l => counts[locationStatus(l, have)]++);
   const seg = ['all', 'ready', 'locked', 'cleared'].map(s =>
     `<button data-action="status" data-v="${s}" class="${ui.status === s ? 'active' : ''}">${s === 'all' ? 'All' : STATUS[s]} <span class="n">${counts[s]}</span></button>`).join('');
-  const sorts = [['number', 'By number'], ['atlas', 'By atlas page'], ['status', 'By status']]
+  const sorts = [['number', 'By number'], ['atlas', 'By atlas page'], ['status', 'By status'], ['added', 'Recently added'], ['modified', 'Recently modified']]
     .map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('');
   return `<div class="toolbar">
       <input class="search" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
@@ -694,6 +703,7 @@ function commit() {
 }
 
 const findLoc = id => data.locations.find(l => l.id === id);
+const touch = loc => { loc.updated = new Date().toISOString(); commit(); };
 
 function addKeyword(name, gainedAt = '', quest = '') {
   const n = norm(name);
@@ -798,6 +808,8 @@ function saveLocDialog() {
   const m = mapEntry(number);
   const loc = { id: id || uid(), number, name: el.locName.value.trim() || m.name || '', atlasPage: el.atlasPage.value.trim() || m.page || '', options, adventures, notes: el.notes.value.trim() };
   const i = data.locations.findIndex(l => l.id === loc.id);
+  const now = new Date().toISOString();
+  Object.assign(loc, { created: i >= 0 ? data.locations[i].created : now, updated: now });
   // Quests are keywords linked by gainedAt: unlink the old ones, then add or update each row.
   if (i >= 0) data.keywords.forEach(k => { if (k.gainedAt === data.locations[i].number) k.gainedAt = ''; });
   for (const q of quests) {
@@ -984,13 +996,13 @@ const actions = {
     render();
     window.scrollTo(0, 0);
   },
-  'toggle-opt'(el) { const o = findLoc(el.dataset.loc).options[el.dataset.i]; o.done = !o.done; commit(); },
+  'toggle-opt'(el) { const loc = findLoc(el.dataset.loc); const o = loc.options[el.dataset.i]; o.done = !o.done; touch(loc); },
   'toggle-kw'(el) { const k = data.keywords.find(x => x.name === el.dataset.kw); k.done = !k.done; commit(); },
   'new-loc'() { openLocDialog(null); },
   'edit-loc'(el) { openLocDialog(el.dataset.loc); },
   'add-opt'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'kw')); },
   'add-none'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'none')); },
-  'toggle-adv'(el) { const a = findLoc(el.dataset.loc).adventures[el.dataset.i]; a.done = !a.done; commit(); },
+  'toggle-adv'(el) { const loc = findLoc(el.dataset.loc); const a = loc.adventures[el.dataset.i]; a.done = !a.done; touch(loc); },
   'add-adv'() { appendRow($('#advRows'), advRowHtml({ card: '', done: false, note: '' })); },
   'add-quest'() { appendRow($('#questRows'), questRowHtml({ name: '', quest: '', done: false })); },
   'remove-row'(el) { el.closest('li').remove(); },
