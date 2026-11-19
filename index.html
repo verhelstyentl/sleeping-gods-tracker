@@ -280,14 +280,14 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
       </div>
     </fieldset>
     <fieldset>
-      <legend>Adventure cards</legend>
-      <ul class="rows" id="advRows"></ul>
-      <div class="rowbtns"><button type="button" class="btn sm" data-action="add-adv">+ Adventure card</button></div>
-    </fieldset>
-    <fieldset>
       <legend>Quests gained here</legend>
       <ul class="rows" id="questRows"></ul>
       <div class="rowbtns"><button type="button" class="btn sm" data-action="add-quest">+ Quest</button></div>
+    </fieldset>
+    <fieldset>
+      <legend>Adventure cards</legend>
+      <ul class="rows" id="advRows"></ul>
+      <div class="rowbtns"><button type="button" class="btn sm" data-action="add-adv">+ Adventure card</button></div>
     </fieldset>
     <label class="field">Notes<textarea name="notes" rows="2"></textarea></label>
     <footer>
@@ -576,8 +576,8 @@ function locCard(loc, have) {
       <span class="status ${st}">${STATUS[st]}</span>
     </header>
     ${opts ? `<h4>Options</h4><ul>${opts}</ul>` : ''}
-    ${advs ? `<h4>Adventure cards</h4><ul>${advs}</ul>` : ''}
     ${quests ? `<h4>Quests</h4><ul>${quests}</ul>` : ''}
+    ${advs ? `<h4>Adventure cards</h4><ul>${advs}</ul>` : ''}
     ${loc.notes ? `<p class="notes">${esc(loc.notes)}</p>` : ''}
     ${editing() ? `<button class="link" data-action="edit-loc" data-loc="${loc.id}">Edit</button>` : ''}
   </article>`;
