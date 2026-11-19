@@ -1,6 +1,44 @@
 {
   "version": 1,
-  "updatedAt": null,
-  "keywords": [],
-  "locations": []
+  "updatedAt": "2026-11-19T19:31:35.315Z",
+  "keywords": [
+    {
+      "name": "RAID",
+      "quest": "1",
+      "done": false,
+      "gainedAt": "",
+      "note": ""
+    },
+    {
+      "name": "COTTAGE",
+      "quest": "2",
+      "done": false,
+      "gainedAt": "",
+      "note": ""
+    },
+    {
+      "name": "FALCON",
+      "quest": "6",
+      "done": false,
+      "gainedAt": "34",
+      "note": ""
+    }
+  ],
+  "locations": [
+    {
+      "id": "pmc8m46k",
+      "number": "34",
+      "name": "",
+      "atlasPage": "2",
+      "options": [],
+      "quests": [
+        {
+          "name": "6",
+          "keyword": "FALCON",
+          "done": false
+        }
+      ],
+      "notes": ""
+    }
+  ]
 }
