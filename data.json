@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-19T19:33:00.294Z",
+  "updatedAt": "2026-11-19T19:39:25.572Z",
   "keywords": [
     {
       "name": "RAID",
@@ -67,6 +67,39 @@
         }
       ],
       "quests": [],
+      "notes": ""
+    },
+    {
+      "id": "v4vxdqa4",
+      "number": "20",
+      "name": "",
+      "atlasPage": "",
+      "options": [
+        {
+          "keywords": [
+            "PILLARS"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [],
+          "done": false,
+          "note": ""
+        }
+      ],
+      "quests": [
+        {
+          "name": "59",
+          "keyword": "STONE",
+          "done": false
+        },
+        {
+          "name": "60",
+          "keyword": "PILLARS",
+          "done": false
+        }
+      ],
       "notes": ""
     }
   ]
