@@ -239,7 +239,7 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
   <form id="locForm" novalidate>
     <h2 id="locTitle">Location</h2>
     <div class="fields">
-      <label class="field">Number<input name="number" required inputmode="numeric" autocomplete="off"></label>
+      <label class="field">Number<input name="number" required autocomplete="off" placeholder="e.g. 130 or R20"></label>
       <label class="field">Atlas page<input name="atlasPage" inputmode="numeric" autocomplete="off"></label>
       <label class="field wide">Name<input name="locName" autocomplete="off" placeholder="Optional"></label>
     </div>
@@ -315,7 +315,7 @@ const STATUS = { ready: 'Ready', locked: 'Needs keyword', cleared: 'Done' };
 const STATUS_ORDER = { ready: 0, locked: 1, cleared: 2 };
 
 let data = emptyData();
-let atlas = {}; // location number -> atlas page, from atlas.json
+let atlas = {}; // location number -> { page, name } from atlas.json
 let mode = 'view'; // 'view' | 'local' | 'github'
 let conn = null;
 let remoteSha = null;
@@ -351,7 +351,7 @@ function migrate(d) {
     keywords: (d.keywords ?? []).map(k => ({ name: norm(k.name), quest: String(k.quest ?? ''), done: !!k.done, gainedAt: k.gainedAt ?? '', note: k.note ?? '' })).filter(k => k.name),
     locations: (d.locations ?? []).map(l => ({
       id: l.id || uid(),
-      number: String(l.number ?? ''),
+      number: String(l.number ?? '').toUpperCase(),
       name: l.name ?? '',
       atlasPage: String(l.atlasPage ?? ''),
       options: (l.options ?? []).map(o => ({ keywords: (o.keywords ?? []).map(norm).filter(Boolean), done: !!o.done, note: o.note ?? '' })),
@@ -364,7 +364,9 @@ function migrate(d) {
 // ---------- Derived state ----------
 
 const owned = () => new Map(data.keywords.map(k => [k.name, k]));
-const atlasOf = loc => loc.atlasPage || atlas[loc.number] || '';
+const locNumber = s => String(s).trim().replace(/^#/, '').toUpperCase();
+const mapEntry = n => atlas[locNumber(n)] ?? {};
+const atlasOf = loc => loc.atlasPage || mapEntry(loc.number).page || '';
 
 function optionState(o, have) {
   if (o.done) return 'done';
@@ -407,9 +409,9 @@ function usages(name) {
 
 function matches(loc, q) {
   if (!q) return true;
-  if (q.startsWith('#')) return loc.number === q.slice(1).trim();
+  if (q.startsWith('#')) return loc.number === locNumber(q);
   const hay = [
-    loc.number, loc.name, loc.notes, atlasOf(loc) && 'p' + atlasOf(loc),
+    loc.number, loc.name || mapEntry(loc.number).name, loc.notes, atlasOf(loc) && 'p' + atlasOf(loc),
     ...loc.options.flatMap(o => [...o.keywords, o.note]),
     ...loc.quests.flatMap(x => [x.name, x.keyword]),
   ].join(' ').toLowerCase();
@@ -437,11 +439,11 @@ const locRef = (loc, done = false) =>
   `<button class="locref ${done ? 'done' : ''}" data-action="goto-loc" data-loc="${loc.id}" title="${esc(loc.name)}">#${esc(loc.number)}</button>`;
 
 function locRefByNumber(n) {
-  const loc = data.locations.find(l => l.number === String(n).replace(/^#/, ''));
+  const loc = data.locations.find(l => l.number === locNumber(n));
   return loc ? locRef(loc) : `#${esc(n)}`;
 }
 
-const locTitle = loc => esc(loc.name || `Location ${loc.number}`);
+const locTitle = loc => esc(loc.name || mapEntry(loc.number).name || `Location ${loc.number}`);
 const empty = msg => `<p class="empty">${msg}</p>`;
 
 function questItem({ loc, q, i }, have) {
@@ -648,7 +650,7 @@ function addKeyword(name, gainedAt = '', quest = '') {
   const n = norm(name);
   if (!n) return false;
   if (data.keywords.some(k => k.name === n)) { toast(`${n} is already in the list`); return false; }
-  data.keywords.push({ name: n, quest: quest.trim().replace(/^#/, ''), done: false, gainedAt: gainedAt.trim().replace(/^#/, ''), note: '' });
+  data.keywords.push({ name: n, quest: quest.trim().replace(/^#/, ''), done: false, gainedAt: locNumber(gainedAt), note: '' });
   commit();
   toast(`Added ${n}`);
   return true;
@@ -692,7 +694,7 @@ function openLocDialog(id) {
   $('#locTitle').textContent = loc ? `Location #${loc.number}` : 'New location';
   el.number.value = loc?.number ?? '';
   el.atlasPage.value = loc?.atlasPage ?? '';
-  suggestAtlasPage();
+  suggestFromMap();
   el.locName.value = loc?.name ?? '';
   el.notes.value = loc?.notes ?? '';
   $('#optRows').innerHTML = (loc?.options ?? []).map(o => optRowHtml(o, o.keywords.length ? 'kw' : 'none')).join('');
@@ -702,17 +704,18 @@ function openLocDialog(id) {
   if (!loc) el.number.focus();
 }
 
-function suggestAtlasPage() {
+function suggestFromMap() {
   const el = $('#locForm').elements;
-  const page = atlas[el.number.value.trim().replace(/^#/, '')];
-  el.atlasPage.placeholder = page ? `${page} (from map)` : '';
+  const m = mapEntry(el.number.value);
+  el.atlasPage.placeholder = m.page ? `${m.page} (from map)` : '';
+  el.locName.placeholder = m.name ? `${m.name} (from map)` : 'Optional';
 }
 
 function saveLocDialog() {
   const f = $('#locForm');
   const el = f.elements;
   const id = f.dataset.id;
-  const number = el.number.value.trim().replace(/^#/, '');
+  const number = locNumber(el.number.value);
   if (!number) { toast('A location needs a number'); el.number.focus(); return false; }
   if (data.locations.some(l => l.number === number && l.id !== id)) { toast(`Location #${number} already exists`); el.number.focus(); return false; }
   const field = (li, name) => li.querySelector(`[name=${name}]`);
@@ -726,7 +729,8 @@ function saveLocDialog() {
     const keyword = norm(field(li, 'qkw').value);
     return name || keyword ? { name: name || 'Quest', keyword, done: field(li, 'done').checked } : null;
   }).filter(Boolean);
-  const loc = { id: id || uid(), number, name: el.locName.value.trim(), atlasPage: el.atlasPage.value.trim() || atlas[number] || '', options, quests, notes: el.notes.value.trim() };
+  const m = mapEntry(number);
+  const loc = { id: id || uid(), number, name: el.locName.value.trim() || m.name || '', atlasPage: el.atlasPage.value.trim() || m.page || '', options, quests, notes: el.notes.value.trim() };
   const i = data.locations.findIndex(l => l.id === loc.id);
   if (i >= 0) data.locations[i] = loc; else data.locations.push(loc);
   commit();
@@ -758,7 +762,7 @@ function saveKwDialog() {
     k.name = name;
   }
   k.quest = f.elements.quest.value.trim().replace(/^#/, '');
-  k.gainedAt = f.elements.gainedAt.value.trim().replace(/^#/, '');
+  k.gainedAt = locNumber(f.elements.gainedAt.value);
   k.note = f.elements.note.value.trim();
   commit();
   return true;
@@ -968,7 +972,7 @@ document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e =
 
 document.addEventListener('input', e => {
   if (e.target.dataset.input === 'q') { ui.q = e.target.value; $('#locList').innerHTML = locList(owned()); }
-  if (e.target === $('#locForm').elements.number) suggestAtlasPage();
+  if (e.target === $('#locForm').elements.number) suggestFromMap();
 });
 
 document.addEventListener('change', e => {

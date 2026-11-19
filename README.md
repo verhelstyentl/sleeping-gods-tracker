@@ -4,7 +4,7 @@ A single-page tracker for our Sleeping Gods campaign: the keywords we have, the 
 
 - `index.html` is the whole app (no build step).
 - `data.json` holds the campaign data. Every save from the page commits this file.
-- `atlas.json` maps location numbers to atlas pages, e.g. `{ "12": "3" }`. When you add a location without an atlas page, the page is filled in from this file.
+- `atlas.json` maps every location number on the map to its atlas page and, for named places, its name, e.g. `"130": { "page": "2", "name": "Zikura Trading Post" }`. When you add a location, the page and name are filled in from this file unless you type your own. The data was extracted from the fan-made Sleeping Gods map PDF on BoardGameGeek: 203 locations, including the `R` locations from Tides of Ruin.
 
 ## What it tracks
 
