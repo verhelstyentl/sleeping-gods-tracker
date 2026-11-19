@@ -1,26 +1,47 @@
 {
-  "version": 1,
-  "updatedAt": "2026-11-19T19:39:25.572Z",
+  "version": 2,
+  "updatedAt": "2026-11-19T19:50:21.516Z",
   "keywords": [
     {
       "name": "RAID",
       "quest": "1",
-      "done": false,
+      "done": true,
       "gainedAt": "",
       "note": ""
     },
     {
       "name": "COTTAGE",
       "quest": "2",
-      "done": false,
+      "done": true,
       "gainedAt": "",
       "note": ""
     },
     {
       "name": "FALCON",
       "quest": "6",
-      "done": false,
+      "done": true,
       "gainedAt": "34",
+      "note": ""
+    },
+    {
+      "name": "STONE",
+      "quest": "59",
+      "done": false,
+      "gainedAt": "20",
+      "note": ""
+    },
+    {
+      "name": "PILLARS",
+      "quest": "60",
+      "done": false,
+      "gainedAt": "20",
+      "note": ""
+    },
+    {
+      "name": "BARNACLE",
+      "quest": "",
+      "done": false,
+      "gainedAt": "36",
       "note": ""
     }
   ],
@@ -31,13 +52,6 @@
       "name": "",
       "atlasPage": "2",
       "options": [],
-      "quests": [
-        {
-          "name": "6",
-          "keyword": "FALCON",
-          "done": false
-        }
-      ],
       "notes": ""
     },
     {
@@ -62,11 +76,10 @@
         },
         {
           "keywords": [],
-          "done": false,
+          "done": true,
           "note": "Pann Traders"
         }
       ],
-      "quests": [],
       "notes": ""
     },
     {
@@ -84,20 +97,123 @@
         },
         {
           "keywords": [],
+          "done": true,
+          "note": ""
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "0gvfx5mm",
+      "number": "36",
+      "name": "",
+      "atlasPage": "4",
+      "options": [],
+      "notes": ""
+    },
+    {
+      "id": "gk3pr04g",
+      "number": "47",
+      "name": "",
+      "atlasPage": "3",
+      "options": [
+        {
+          "keywords": [
+            "FALCON"
+          ],
+          "done": true,
+          "note": ""
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "5tdt6djy",
+      "number": "63",
+      "name": "",
+      "atlasPage": "3",
+      "options": [
+        {
+          "keywords": [
+            "RAID"
+          ],
+          "done": true,
+          "note": ""
+        },
+        {
+          "keywords": [
+            "ABANDON"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [],
           "done": false,
           "note": ""
         }
       ],
-      "quests": [
+      "notes": ""
+    },
+    {
+      "id": "11tieuz1",
+      "number": "98",
+      "name": "",
+      "atlasPage": "4",
+      "options": [
         {
-          "name": "59",
-          "keyword": "STONE",
-          "done": false
+          "keywords": [
+            "SQUARE"
+          ],
+          "done": false,
+          "note": ""
         },
         {
-          "name": "60",
-          "keyword": "PILLARS",
-          "done": false
+          "keywords": [],
+          "done": true,
+          "note": ""
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "z30no3qc",
+      "number": "130",
+      "name": "Zikura Trading Post",
+      "atlasPage": "2",
+      "options": [
+        {
+          "keywords": [
+            "UNLEASH"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [],
+          "done": true,
+          "note": ""
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "819ih7yj",
+      "number": "218",
+      "name": "",
+      "atlasPage": "3",
+      "options": [
+        {
+          "keywords": [
+            "HUNTED"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [],
+          "done": true,
+          "note": ""
         }
       ],
       "notes": ""
