@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sleeping Gods Tracker</title>
+<meta name="description" content="Keywords, locations and quests for our Sleeping Gods campaign.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f1e9d8;
+  --surface: #fdf9f1;
+  --surface-2: #f5eedf;
+  --ink: #2a2017;
+  --ink-2: #5a4b3a;
+  --muted: #7e6e58;
+  --line: #e1d4bb;
+  --accent: #1b6670;
+  --accent-ink: #fff;
+  --gold: #b08a3e;
+  --have-bg: #1b6670;
+  --have-ink: #fff;
+  --miss-ink: #7e6e58;
+  --miss-line: #bfae8f;
+  --ready: #2c7344;
+  --ready-bg: #deeedf;
+  --locked: #985417;
+  --locked-bg: #f7e5cf;
+  --cleared: #6f685d;
+  --cleared-bg: #ebe5d9;
+  --danger: #a83226;
+  --header: #13262d;
+  --header-2: #0e1d23;
+  --header-ink: #efe6d2;
+  --gold-hi: #e3b85c;
+  --shadow: 0 1px 2px rgba(70, 50, 20, .06), 0 6px 16px rgba(70, 50, 20, .06);
+  --radius: 12px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e161a;
+    --surface: #152027;
+    --surface-2: #1a2830;
+    --ink: #ece4d3;
+    --ink-2: #c3b8a3;
+    --muted: #8b989f;
+    --line: #26363f;
+    --accent: #5ab4be;
+    --accent-ink: #0a1417;
+    --gold: #c99f4e;
+    --have-bg: #2a6d76;
+    --have-ink: #f1fbfb;
+    --miss-ink: #9aa6ac;
+    --miss-line: #4a5e67;
+    --ready: #7fcf8f;
+    --ready-bg: #173225;
+    --locked: #e6a865;
+    --locked-bg: #382816;
+    --cleared: #9aa2a4;
+    --cleared-bg: #212b30;
+    --danger: #f0806f;
+    --header: #0a1316;
+    --header-2: #081013;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.5 "Source Sans 3", system-ui, sans-serif;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* Header + tabs */
+.top { background: var(--header); color: var(--header-ink); padding: 14px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font: 700 1.4rem/1.1 Cinzel, serif; letter-spacing: .06em; color: var(--gold-hi); }
+.brand span { font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; opacity: .7; }
+.top-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.save-state { font-size: .85rem; opacity: .85; }
+.save-state.dirty::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--gold-hi); margin-right: 6px; }
+.tabs { position: sticky; top: 0; z-index: 5; display: flex; gap: 4px; padding: 0 10px; overflow-x: auto; scrollbar-width: none; background: var(--header-2); }
+.tabs button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 11px 10px 9px; color: var(--header-ink); opacity: .7; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.tabs button.active { opacity: 1; border-bottom-color: var(--gold-hi); }
+.tabs .count { font-size: .72rem; margin-left: 4px; padding: 1px 7px; border-radius: 999px; background: rgba(255, 255, 255, .12); }
+
+main { width: 100%; max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; flex: 1; }
+.foot { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; padding: 16px; font-size: .85rem; color: var(--muted); }
+
+/* Generic bits */
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.danger { background: none; border-color: transparent; color: var(--danger); padding-left: 0; }
+.btn.sm { padding: 3px 10px; font-size: .85rem; }
+.top .btn { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .2); color: var(--header-ink); }
+.top .btn.primary { background: var(--gold-hi); border-color: var(--gold-hi); color: #1a1408; }
+.link { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.foot .link { color: inherit; font-weight: 400; }
+.hint { font-size: .85rem; color: var(--muted); }
+.empty { text-align: center; color: var(--muted); padding: 28px 16px; border: 1.5px dashed var(--line); border-radius: var(--radius); }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+.search { flex: 1 1 220px; min-width: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.search.short { flex: 0 1 150px; }
+select { padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.seg { display: inline-flex; max-width: 100%; overflow-x: auto; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.seg button { border: 0; background: none; padding: 6px 10px; border-radius: 7px; font-size: .9rem; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
+.seg button.active { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+.seg .n { color: var(--muted); font-size: .8rem; margin-left: 2px; }
+
+/* Keywords, numbers, status */
+.kw { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font: 700 .72rem/1.3 Cinzel, serif; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.kw.have { background: var(--have-bg); color: var(--have-ink); }
+.kw.miss { border: 1.5px dashed var(--miss-line); color: var(--miss-ink); padding: 1.5px 7.5px; }
+.kw.none { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-2); padding: 2px 8px; }
+.chips { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.plus, .sep { font-size: .8rem; color: var(--muted); }
+.sep { margin: 0 4px; font-style: italic; }
+.locnum { flex: none; display: grid; place-items: center; min-width: 42px; height: 42px; padding: 0 6px; border: 2px solid var(--gold); border-radius: 999px; background: var(--surface-2); font: 700 .95rem Cinzel, serif; }
+.locnum.sm { min-width: 34px; height: 34px; font-size: .8rem; }
+.status { padding: 3px 8px; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.status.ready { background: var(--ready-bg); color: var(--ready); }
+.status.locked { background: var(--locked-bg); color: var(--locked); }
+.status.cleared { background: var(--cleared-bg); color: var(--cleared); }
+.avail { font-size: .75rem; font-weight: 700; color: var(--ready); }
+.locref { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 0 8px; font-size: .8rem; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+.locref.done, .strike { text-decoration: line-through; opacity: .6; }
+.tick { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 2px solid var(--miss-line); border-radius: 6px; background: transparent; }
+button.tick { width: 26px; height: 26px; cursor: pointer; }
+button.tick:hover { border-color: var(--accent); }
+.tick.on { background: var(--ready); border-color: var(--ready); }
+.tick.on::after { content: ""; width: 6px; height: 11px; border: solid var(--surface); border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg); }
+
+/* Overview */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.stat b { display: block; font: 700 1.9rem/1.1 Cinzel, serif; }
+.stat span { font-size: .85rem; color: var(--muted); }
+.cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: start; }
+.section { margin-bottom: 28px; }
+.section h2 { display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px; font: 700 1.05rem Cinzel, serif; letter-spacing: .06em; }
+.section h2 small { font: 400 .85rem "Source Sans 3", sans-serif; color: var(--muted); letter-spacing: 0; }
+.list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.list > li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.list > li:first-child { border-top: 0; }
+.list > li.done .qname { text-decoration: line-through; opacity: .6; }
+.locrow { display: flex; align-items: center; gap: 10px; min-width: 0; border: 0; background: none; padding: 0; text-align: left; cursor: pointer; }
+.locrow b { display: block; line-height: 1.2; }
+.locrow small { color: var(--muted); }
+.meta { font-size: .88rem; color: var(--ink-2); }
+.qname { font-weight: 600; }
+.push { margin-left: auto; }
+
+/* Location cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.card { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.card > header { display: flex; align-items: center; gap: 12px; }
+.card .title { flex: 1; min-width: 0; }
+.card h3 { margin: 0; font-size: 1.05rem; line-height: 1.25; }
+.card .atlas { font-size: .82rem; color: var(--muted); }
+.card h4 { margin: 6px 0 0; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.card li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.card li.done .chips, .card li.done .qname { text-decoration: line-through; opacity: .5; }
+.card .note { font-size: .88rem; color: var(--ink-2); }
+.card .notes { margin: 4px 0 0; padding-top: 8px; border-top: 1px dashed var(--line); font-size: .9rem; color: var(--ink-2); white-space: pre-wrap; }
+.card .link { align-self: flex-start; margin-top: 4px; }
+
+/* Dialogs */
+dialog { width: min(680px, calc(100vw - 24px)); max-height: calc(100vh - 32px); padding: 0; border: 0; border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
+dialog::backdrop { background: rgba(10, 18, 22, .55); }
+dialog form { display: flex; flex-direction: column; gap: 14px; padding: 20px; }
+dialog h2 { margin: 0; font: 700 1.2rem Cinzel, serif; }
+dialog p { margin: 0; }
+dialog footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.fields { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; font-weight: 600; color: var(--ink-2); }
+dialog input:not([type=checkbox]), dialog textarea { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+fieldset { margin: 0; padding: 8px 12px 12px; border: 1px solid var(--line); border-radius: 12px; }
+legend { padding: 0 6px; font-size: .85rem; font-weight: 700; }
+.rows { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rows li { display: grid; grid-template-columns: auto 1.3fr 1fr auto; grid-template-areas: "chk main extra x"; gap: 8px; align-items: center; }
+.rows .c-chk { grid-area: chk; display: flex; align-items: center; gap: 4px; font-size: .85rem; }
+.rows .c-chk input { width: 18px; height: 18px; accent-color: var(--ready); }
+.rows .c-main { grid-area: main; display: flex; align-items: center; gap: 6px; }
+.rows .c-extra { grid-area: extra; }
+.rows .c-x { grid-area: x; border: 0; background: none; color: var(--muted); font-size: 1rem; padding: 4px 6px; cursor: pointer; }
+.rows .c-x:hover { color: var(--danger); }
+.rowbtns { display: flex; gap: 8px; flex-wrap: wrap; }
+.error { color: var(--danger); font-weight: 600; }
+[name=kw], [name=keywords], [name=qkw], [name=kwName] { text-transform: uppercase; }
+code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--surface-2); }
+
+.toast { position: fixed; left: 50%; bottom: 20px; z-index: 50; max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 10px; background: var(--header); color: var(--header-ink); opacity: 0; pointer-events: none; transform: translate(-50%, 16px); transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 860px) {
+  .cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .fields { grid-template-columns: 1fr 1fr; }
+  .fields .wide { grid-column: 1 / -1; }
+  .rows li { grid-template-columns: auto 1fr auto; grid-template-areas: "chk main x" ". extra extra"; }
+  .search.short { flex: 1 1 120px; }
+  .tabs { padding: 0 6px; gap: 0; }
+  .tabs button { padding-left: 8px; padding-right: 8px; font-size: .95rem; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><h1>Sleeping Gods</h1><span>Campaign tracker</span></div>
+  <div class="top-actions" id="topActions"></div>
+</header>
+<nav class="tabs" aria-label="Sections">
+  <button data-action="tab" data-v="overview">Overview</button>
+  <button data-action="tab" data-v="locations">Locations<span class="count" data-count="locations"></span></button>
+  <button data-action="tab" data-v="keywords">Keywords<span class="count" data-count="keywords"></span></button>
+  <button data-action="tab" data-v="quests">Quests<span class="count" data-count="quests"></span></button>
+</nav>
+<main id="view"><p class="hint">Loading…</p></main>
+<footer class="foot"><span id="updated"></span><span id="footActions"></span></footer>
+<datalist id="kwAll"></datalist>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog id="locDialog">
+  <form id="locForm" novalidate>
+    <h2 id="locTitle">Location</h2>
+    <div class="fields">
+      <label class="field">Number<input name="number" required inputmode="numeric" autocomplete="off"></label>
+      <label class="field">Atlas page<input name="atlasPage" inputmode="numeric" autocomplete="off"></label>
+      <label class="field wide">Name<input name="locName" autocomplete="off" placeholder="Optional"></label>
+    </div>
+    <fieldset>
+      <legend>Options</legend>
+      <ul class="rows" id="optRows"></ul>
+      <div class="rowbtns">
+        <button type="button" class="btn sm" data-action="add-opt">+ Keyword option</button>
+        <button type="button" class="btn sm" data-action="add-none">+ Option without keyword</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Quests from this location</legend>
+      <ul class="rows" id="questRows"></ul>
+      <div class="rowbtns"><button type="button" class="btn sm" data-action="add-quest">+ Quest</button></div>
+    </fieldset>
+    <label class="field">Notes<textarea name="notes" rows="2"></textarea></label>
+    <footer>
+      <button type="button" class="btn danger" data-action="delete-loc">Delete location</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" data-action="close-dialog">Cancel</button>
+      <button class="btn primary">Save location</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog id="kwDialog">
+  <form id="kwForm" novalidate>
+    <h2>Edit keyword</h2>
+    <label class="field">Keyword<input name="kwName" required autocomplete="off"></label>
+    <label class="field">Gained at location #<input name="gainedAt" autocomplete="off"></label>
+    <label class="field">Note<input name="note" autocomplete="off"></label>
+    <footer>
+      <button type="button" class="btn danger" data-action="delete-kw">Remove keyword</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" data-action="close-dialog">Cancel</button>
+      <button class="btn primary">Save</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog id="connectDialog">
+  <form id="connectForm" novalidate>
+    <h2>Editor login</h2>
+    <p class="hint">Anyone with the link can view this page. To make changes, connect with a GitHub token that can write to the repository. Saving commits the changes to <code>data.json</code>.</p>
+    <div class="fields">
+      <label class="field">Owner<input name="owner" required autocomplete="off"></label>
+      <label class="field">Branch<input name="branch" required autocomplete="off"></label>
+      <label class="field wide">Repository<input name="repo" required autocomplete="off"></label>
+    </div>
+    <label class="field">Fine-grained token<input name="token" type="password" required autocomplete="off"></label>
+    <p class="hint">GitHub → Settings → Developer settings → Fine-grained tokens. Repository access: only this repository. Permission: Contents → Read and write. The token is stored only in this browser.</p>
+    <p class="error" id="connectError" hidden></p>
+    <footer>
+      <button type="button" class="link" data-action="edit-local">Edit locally instead</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" data-action="close-dialog">Cancel</button>
+      <button class="btn primary">Connect</button>
+    </footer>
+  </form>
+</dialog>
+
+<script>
+'use strict';
+
+// Repo settings for saving. On <owner>.github.io/<repo>/ owner and repo are detected automatically.
+const CONFIG = { owner: '', repo: '', branch: 'main', path: 'data.json' };
+
+const LS = { token: 'sgt-token', repo: 'sgt-repo', draft: 'sgt-draft' };
+const TABS = ['overview', 'locations', 'keywords', 'quests'];
+const STATUS = { ready: 'Ready', locked: 'Needs keyword', cleared: 'Done' };
+const STATUS_ORDER = { ready: 0, locked: 1, cleared: 2 };
+
+let data = emptyData();
+let mode = 'view'; // 'view' | 'local' | 'github'
+let conn = null;
+let remoteSha = null;
+let dirty = false;
+let saving = false;
+let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
+const ui = { q: '', status: 'all', sort: 'number', quests: 'open' };
+
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const norm = k => String(k ?? '').trim().toUpperCase();
+const splitKw = s => s.split(/[,+]/).map(norm).filter(Boolean);
+const uid = () => Math.random().toString(36).slice(2, 10);
+const num = v => (v === '' || v == null || isNaN(v)) ? Infinity : Number(v);
+const byNumber = (a, b) => String(a.number).localeCompare(String(b.number), undefined, { numeric: true });
+const fmtDate = d => new Date(d).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+const editing = () => mode !== 'view';
+
+function emptyData() {
+  return { version: 1, updatedAt: null, keywords: [], locations: [] };
+}
+
+function migrate(d) {
+  return {
+    version: 1,
+    updatedAt: d.updatedAt ?? null,
+    keywords: (d.keywords ?? []).map(k => ({ name: norm(k.name), gainedAt: k.gainedAt ?? '', note: k.note ?? '' })).filter(k => k.name),
+    locations: (d.locations ?? []).map(l => ({
+      id: l.id || uid(),
+      number: String(l.number ?? ''),
+      name: l.name ?? '',
+      atlasPage: String(l.atlasPage ?? ''),
+      options: (l.options ?? []).map(o => ({ keywords: (o.keywords ?? []).map(norm).filter(Boolean), done: !!o.done, note: o.note ?? '' })),
+      quests: (l.quests ?? []).map(q => ({ name: q.name ?? '', keyword: norm(q.keyword), done: !!q.done })),
+      notes: l.notes ?? '',
+    })),
+  };
+}
+
+// ---------- Derived state ----------
+
+const owned = () => new Set(data.keywords.map(k => k.name));
+
+function optionState(o, have) {
+  if (o.done) return 'done';
+  return o.keywords.every(k => have.has(k)) ? 'open' : 'locked';
+}
+
+function locationStatus(loc, have) {
+  const states = loc.options.map(o => optionState(o, have));
+  if (states.includes('open')) return 'ready';
+  if (states.includes('locked')) return 'locked';
+  return 'cleared';
+}
+
+const allQuests = () => data.locations.flatMap(loc => loc.quests.map((q, i) => ({ loc, q, i })));
+
+// Keywords that unticked options or open quests mention but we don't have yet.
+function wantedKeywords(have) {
+  const map = new Map();
+  const add = (k, ref) => {
+    if (!k || have.has(k)) return;
+    if (!map.has(k)) map.set(k, { name: k, locs: new Map(), quests: [] });
+    const w = map.get(k);
+    ref.q ? w.quests.push(ref) : w.locs.set(ref.loc.id, ref.loc);
+  };
+  for (const loc of data.locations) {
+    loc.options.forEach(o => { if (!o.done) o.keywords.forEach(k => add(k, { loc })); });
+    loc.quests.forEach(q => { if (!q.done) add(q.keyword, { loc, q }); });
+  }
+  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function usages(name) {
+  const opts = [], quests = [];
+  for (const loc of data.locations) {
+    loc.options.forEach(o => { if (o.keywords.includes(name)) opts.push({ loc, o }); });
+    loc.quests.forEach(q => { if (q.keyword === name) quests.push({ loc, q }); });
+  }
+  return { opts, quests };
+}
+
+function matches(loc, q) {
+  if (!q) return true;
+  if (q.startsWith('#')) return loc.number === q.slice(1).trim();
+  const hay = [
+    loc.number, loc.name, loc.notes, loc.atlasPage && 'p' + loc.atlasPage,
+    ...loc.options.flatMap(o => [...o.keywords, o.note]),
+    ...loc.quests.flatMap(x => [x.name, x.keyword]),
+  ].join(' ').toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+
+// ---------- Rendering helpers ----------
+
+function kwChip(k, have) {
+  const h = have.has(k);
+  return `<span class="kw ${h ? 'have' : 'miss'}" title="${h ? 'We have this keyword' : 'We don’t have this keyword yet'}">${esc(k)}</span>`;
+}
+
+const optChips = (o, have) => o.keywords.length
+  ? `<span class="chips">${o.keywords.map(k => kwChip(k, have)).join('<span class="plus">+</span>')}</span>`
+  : `<span class="chips"><span class="kw none" title="No keyword needed">none</span></span>`;
+
+function tick(on, action, attrs, label) {
+  if (!editing()) return `<span class="tick ${on ? 'on' : ''}" role="img" aria-label="${on ? 'Done' : 'Not done'}"></span>`;
+  return `<button class="tick ${on ? 'on' : ''}" data-action="${action}" ${attrs} aria-pressed="${on}" aria-label="${esc(label)}" title="${esc(label)}"></button>`;
+}
+
+const locRef = (loc, done = false) =>
+  `<button class="locref ${done ? 'done' : ''}" data-action="goto-loc" data-loc="${loc.id}" title="${esc(loc.name)}">#${esc(loc.number)}</button>`;
+
+function locRefByNumber(n) {
+  const loc = data.locations.find(l => l.number === String(n).replace(/^#/, ''));
+  return loc ? locRef(loc) : `#${esc(n)}`;
+}
+
+const locTitle = loc => esc(loc.name || `Location ${loc.number}`);
+const empty = msg => `<p class="empty">${msg}</p>`;
+
+function questItem({ loc, q, i }, have) {
+  return `<li class="${q.done ? 'done' : ''}">
+    ${tick(q.done, 'toggle-quest', `data-loc="${loc.id}" data-i="${i}"`, q.done ? 'Mark quest open' : 'Mark quest done')}
+    <span class="qname">${esc(q.name)}</span>
+    ${q.keyword ? kwChip(q.keyword, have) : ''}
+    <span class="meta push">from ${locRef(loc)}</span>
+  </li>`;
+}
+
+function wantedList(wanted, have) {
+  if (!wanted.length) return empty('Nothing — no location or quest is waiting on a keyword we lack.');
+  return `<ul class="list">${wanted.map(w => `<li>
+    ${kwChip(w.name, have)}
+    ${w.locs.size ? `<span class="meta">needed at ${[...w.locs.values()].sort(byNumber).map(l => locRef(l)).join(' ')}</span>` : ''}
+    ${w.quests.length ? `<span class="meta">quest ${w.quests.map(r => `“${esc(r.q.name)}”`).join(', ')}</span>` : ''}
+    ${editing() ? `<button class="btn sm push" data-action="got-kw" data-kw="${esc(w.name)}">We got it</button>` : ''}
+  </li>`).join('')}</ul>`;
+}
+
+// ---------- Views ----------
+
+function viewOverview(have) {
+  const ready = data.locations.filter(l => locationStatus(l, have) === 'ready').sort(byNumber);
+  const open = allQuests().filter(x => !x.q.done);
+  const stats = [
+    [data.keywords.length, 'Keywords'],
+    [data.locations.length, 'Locations'],
+    [ready.length, 'Ready to visit'],
+    [open.length, 'Open quests'],
+  ].map(([n, label]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('');
+
+  const readyHtml = ready.length ? `<ul class="list">${ready.map(loc => `<li>
+      <button class="locrow" data-action="goto-loc" data-loc="${loc.id}">
+        <span class="locnum sm">${esc(loc.number)}</span>
+        <span><b>${locTitle(loc)}</b>${loc.atlasPage ? `<small>Atlas p. ${esc(loc.atlasPage)}</small>` : ''}</span>
+      </button>
+      <span class="chips push">${loc.options.filter(o => optionState(o, have) === 'open').map(o => optChips(o, have)).join('<span class="sep">or</span>')}</span>
+    </li>`).join('')}</ul>` : empty('Nothing waiting right now. New keywords will unlock more options.');
+
+  return `<div class="stats">${stats}</div>
+    <div class="cols">
+      <div>
+        <section class="section"><h2>Ready to visit <small>options we can do now</small></h2>${readyHtml}</section>
+      </div>
+      <div>
+        <section class="section"><h2>Keywords we need</h2>${wantedList(wantedKeywords(have), have)}</section>
+        <section class="section"><h2>Open quests</h2>${open.length ? `<ul class="list">${open.map(x => questItem(x, have)).join('')}</ul>` : empty('No open quests.')}</section>
+      </div>
+    </div>`;
+}
+
+function locCard(loc, have) {
+  const st = locationStatus(loc, have);
+  const opts = loc.options.map((o, i) => {
+    const s = optionState(o, have);
+    return `<li class="${s}">
+      ${tick(o.done, 'toggle-opt', `data-loc="${loc.id}" data-i="${i}"`, o.done ? 'Mark option not done' : 'Tick off option')}
+      ${optChips(o, have)}
+      ${s === 'open' && o.keywords.length ? '<span class="avail">can do now</span>' : ''}
+      ${o.note ? `<span class="note">${esc(o.note)}</span>` : ''}
+    </li>`;
+  }).join('');
+  const quests = loc.quests.map((q, i) => `<li class="${q.done ? 'done' : ''}">
+      ${tick(q.done, 'toggle-quest', `data-loc="${loc.id}" data-i="${i}"`, q.done ? 'Mark quest open' : 'Mark quest done')}
+      <span class="qname">${esc(q.name)}</span>
+      ${q.keyword ? kwChip(q.keyword, have) : ''}
+    </li>`).join('');
+  return `<article class="card">
+    <header>
+      <span class="locnum">${esc(loc.number)}</span>
+      <div class="title"><h3>${locTitle(loc)}</h3>${loc.atlasPage ? `<span class="atlas">Atlas p. ${esc(loc.atlasPage)}</span>` : ''}</div>
+      <span class="status ${st}">${STATUS[st]}</span>
+    </header>
+    ${opts ? `<h4>Options</h4><ul>${opts}</ul>` : ''}
+    ${quests ? `<h4>Quests</h4><ul>${quests}</ul>` : ''}
+    ${loc.notes ? `<p class="notes">${esc(loc.notes)}</p>` : ''}
+    ${editing() ? `<button class="link" data-action="edit-loc" data-loc="${loc.id}">Edit</button>` : ''}
+  </article>`;
+}
+
+function locList(have) {
+  if (!data.locations.length) return empty(editing() ? 'No locations yet — add the first one you visited.' : 'No locations logged yet.');
+  const status = l => locationStatus(l, have);
+  const sorters = {
+    number: byNumber,
+    atlas: (a, b) => (num(a.atlasPage) - num(b.atlasPage)) || byNumber(a, b),
+    status: (a, b) => (STATUS_ORDER[status(a)] - STATUS_ORDER[status(b)]) || byNumber(a, b),
+  };
+  const list = data.locations
+    .filter(l => (ui.status === 'all' || status(l) === ui.status) && matches(l, ui.q.trim()))
+    .sort(sorters[ui.sort]);
+  return list.length ? `<div class="grid">${list.map(l => locCard(l, have)).join('')}</div>` : empty('No locations match.');
+}
+
+function viewLocations(have) {
+  const counts = { all: data.locations.length, ready: 0, locked: 0, cleared: 0 };
+  data.locations.forEach(l => counts[locationStatus(l, have)]++);
+  const seg = ['all', 'ready', 'locked', 'cleared'].map(s =>
+    `<button data-action="status" data-v="${s}" class="${ui.status === s ? 'active' : ''}">${s === 'all' ? 'All' : STATUS[s]} <span class="n">${counts[s]}</span></button>`).join('');
+  const sorts = [['number', 'By number'], ['atlas', 'By atlas page'], ['status', 'By status']]
+    .map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('');
+  return `<div class="toolbar">
+      <input class="search" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
+      <div class="seg" role="group" aria-label="Filter by status">${seg}</div>
+      <select data-input="sort" aria-label="Sort">${sorts}</select>
+      ${editing() ? '<button class="btn primary" data-action="new-loc">+ Location</button>' : ''}
+    </div>
+    <div id="locList">${locList(have)}</div>`;
+}
+
+function viewKeywords(have) {
+  const kws = [...data.keywords].sort((a, b) => a.name.localeCompare(b.name));
+  const rows = kws.map(k => {
+    const u = usages(k.name);
+    return `<li>
+      ${kwChip(k.name, have)}
+      ${k.gainedAt ? `<span class="meta">gained at ${locRefByNumber(k.gainedAt)}</span>` : ''}
+      ${u.opts.length ? `<span class="meta">used at ${u.opts.map(({ loc, o }) => locRef(loc, o.done)).join(' ')}</span>` : ''}
+      ${u.quests.length ? `<span class="meta">quest ${u.quests.map(({ q }) => `<span class="${q.done ? 'strike' : ''}">“${esc(q.name)}”</span>`).join(', ')}</span>` : ''}
+      ${k.note ? `<span class="meta">· ${esc(k.note)}</span>` : ''}
+      ${editing() ? `<button class="link push" data-action="edit-kw" data-kw="${esc(k.name)}">Edit</button>` : ''}
+    </li>`;
+  }).join('');
+  const add = editing() ? `<form class="toolbar" data-form="add-kw">
+      <input class="search" name="kw" list="kwAll" required autocomplete="off" placeholder="New keyword" aria-label="New keyword">
+      <input class="search short" name="gainedAt" autocomplete="off" placeholder="Gained at #" aria-label="Gained at location number">
+      <button class="btn primary">Add keyword</button>
+    </form>` : '';
+  return `${add}
+    <section class="section"><h2>Keywords we have <small>${kws.length}</small></h2>${kws.length ? `<ul class="list">${rows}</ul>` : empty('No keywords yet.')}</section>
+    <section class="section"><h2>Still looking for <small>mentioned by locations or quests</small></h2>${wantedList(wantedKeywords(have), have)}</section>`;
+}
+
+function viewQuests(have) {
+  const all = allQuests();
+  const counts = { open: all.filter(x => !x.q.done).length, done: all.filter(x => x.q.done).length, all: all.length };
+  const seg = [['open', 'Open'], ['done', 'Done'], ['all', 'All']].map(([v, l]) =>
+    `<button data-action="quest-filter" data-v="${v}" class="${ui.quests === v ? 'active' : ''}">${l} <span class="n">${counts[v]}</span></button>`).join('');
+  const list = all
+    .filter(x => ui.quests === 'all' || (ui.quests === 'done') === x.q.done)
+    .sort((a, b) => (a.q.done - b.q.done) || byNumber(a.loc, b.loc));
+  return `<div class="toolbar">
+      <div class="seg" role="group" aria-label="Filter quests">${seg}</div>
+      ${editing() ? '<span class="hint">Add quests from the location they came from.</span>' : ''}
+    </div>
+    ${list.length ? `<ul class="list">${list.map(x => questItem(x, have)).join('')}</ul>` : empty('No quests here.')}`;
+}
+
+const VIEWS = { overview: viewOverview, locations: viewLocations, keywords: viewKeywords, quests: viewQuests };
+
+function render() {
+  const have = owned();
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.v === tab));
+  const counts = { locations: data.locations.length, keywords: data.keywords.length, quests: allQuests().filter(x => !x.q.done).length };
+  document.querySelectorAll('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count]; });
+  $('#view').innerHTML = VIEWS[tab](have);
+  $('#kwAll').innerHTML = [...new Set([...have, ...wantedKeywords(have).map(w => w.name)])].sort()
+    .map(k => `<option value="${esc(k)}">`).join('');
+  renderChrome();
+}
+
+function renderChrome() {
+  $('#updated').textContent = data.updatedAt ? `Last saved ${fmtDate(data.updatedAt)}` : '';
+  if (!editing()) {
+    $('#topActions').innerHTML = '';
+    $('#footActions').innerHTML = '<button class="link" data-action="editor">Editor login</button>';
+    return;
+  }
+  const state = saving ? 'Saving…' : dirty ? 'Unsaved changes' : mode === 'github' ? 'All changes saved' : 'Editing locally';
+  const label = mode === 'github' ? 'Save' : 'Download data.json';
+  const disabled = saving || (mode === 'github' && !dirty);
+  $('#topActions').innerHTML = `<span class="save-state ${dirty ? 'dirty' : ''}">${state}</span>
+    <button class="btn ${dirty ? 'primary' : ''}" data-action="save" ${disabled ? 'disabled' : ''}>${label}</button>`;
+  $('#footActions').innerHTML = `<button class="link" data-action="disconnect">${mode === 'github' ? `Log out (${esc(conn.owner)}/${esc(conn.repo)})` : 'Stop editing'}</button>`;
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ---------- Mutations ----------
+
+function commit() {
+  dirty = true;
+  store.set(LS.draft, JSON.stringify({ data, at: Date.now() }));
+  render();
+}
+
+const findLoc = id => data.locations.find(l => l.id === id);
+
+function addKeyword(name, gainedAt = '') {
+  const n = norm(name);
+  if (!n) return false;
+  if (data.keywords.some(k => k.name === n)) { toast(`${n} is already in the list`); return false; }
+  data.keywords.push({ name: n, gainedAt: gainedAt.trim().replace(/^#/, ''), note: '' });
+  commit();
+  toast(`Added ${n}`);
+  return true;
+}
+
+function renameKeyword(from, to) {
+  for (const loc of data.locations) {
+    loc.options.forEach(o => { o.keywords = o.keywords.map(k => k === from ? to : k); });
+    loc.quests.forEach(q => { if (q.keyword === from) q.keyword = to; });
+  }
+}
+
+// ---------- Location dialog ----------
+
+const optRowHtml = (o, kind) => `<li data-kind="${kind}">
+  <label class="c-chk"><input type="checkbox" name="done" ${o.done ? 'checked' : ''}>Done</label>
+  <span class="c-main">${kind === 'none'
+    ? '<span class="kw none">none</span><span class="hint">no keyword needed</span>'
+    : `<input name="keywords" list="kwAll" autocomplete="off" value="${esc(o.keywords.join(', '))}" placeholder="KEYWORD (comma for several)" aria-label="Keywords">`}</span>
+  <input class="c-extra" name="note" autocomplete="off" value="${esc(o.note)}" placeholder="Note" aria-label="Note">
+  <button type="button" class="c-x" data-action="remove-row" aria-label="Remove">✕</button>
+</li>`;
+
+const questRowHtml = q => `<li data-kind="quest">
+  <label class="c-chk"><input type="checkbox" name="done" ${q.done ? 'checked' : ''}>Done</label>
+  <span class="c-main"><input name="qname" autocomplete="off" value="${esc(q.name)}" placeholder="Quest name or card #" aria-label="Quest"></span>
+  <input class="c-extra" name="qkw" list="kwAll" autocomplete="off" value="${esc(q.keyword)}" placeholder="Related keyword" aria-label="Related keyword">
+  <button type="button" class="c-x" data-action="remove-row" aria-label="Remove">✕</button>
+</li>`;
+
+function appendRow(list, html) {
+  list.insertAdjacentHTML('beforeend', html);
+  list.lastElementChild.querySelector('input:not([type=checkbox])')?.focus();
+}
+
+function openLocDialog(id) {
+  const loc = id ? findLoc(id) : null;
+  const f = $('#locForm');
+  const el = f.elements;
+  f.dataset.id = loc?.id ?? '';
+  $('#locTitle').textContent = loc ? `Location #${loc.number}` : 'New location';
+  el.number.value = loc?.number ?? '';
+  el.atlasPage.value = loc?.atlasPage ?? '';
+  el.locName.value = loc?.name ?? '';
+  el.notes.value = loc?.notes ?? '';
+  $('#optRows').innerHTML = (loc?.options ?? []).map(o => optRowHtml(o, o.keywords.length ? 'kw' : 'none')).join('');
+  $('#questRows').innerHTML = (loc?.quests ?? []).map(questRowHtml).join('');
+  $('#locForm [data-action=delete-loc]').hidden = !loc;
+  $('#locDialog').showModal();
+  if (!loc) el.number.focus();
+}
+
+function saveLocDialog() {
+  const f = $('#locForm');
+  const el = f.elements;
+  const id = f.dataset.id;
+  const number = el.number.value.trim().replace(/^#/, '');
+  if (!number) { toast('A location needs a number'); el.number.focus(); return false; }
+  if (data.locations.some(l => l.number === number && l.id !== id)) { toast(`Location #${number} already exists`); el.number.focus(); return false; }
+  const field = (li, name) => li.querySelector(`[name=${name}]`);
+  const options = [...$('#optRows').children].map(li => {
+    const keywords = li.dataset.kind === 'none' ? [] : splitKw(field(li, 'keywords').value);
+    if (li.dataset.kind === 'kw' && !keywords.length) return null;
+    return { keywords, done: field(li, 'done').checked, note: field(li, 'note').value.trim() };
+  }).filter(Boolean);
+  const quests = [...$('#questRows').children].map(li => {
+    const name = field(li, 'qname').value.trim();
+    const keyword = norm(field(li, 'qkw').value);
+    return name || keyword ? { name: name || 'Quest', keyword, done: field(li, 'done').checked } : null;
+  }).filter(Boolean);
+  const loc = { id: id || uid(), number, name: el.locName.value.trim(), atlasPage: el.atlasPage.value.trim(), options, quests, notes: el.notes.value.trim() };
+  const i = data.locations.findIndex(l => l.id === loc.id);
+  if (i >= 0) data.locations[i] = loc; else data.locations.push(loc);
+  commit();
+  return true;
+}
+
+// ---------- Keyword dialog ----------
+
+function openKwDialog(name) {
+  const k = data.keywords.find(x => x.name === name);
+  if (!k) return;
+  const f = $('#kwForm');
+  f.dataset.kw = k.name;
+  f.elements.kwName.value = k.name;
+  f.elements.gainedAt.value = k.gainedAt;
+  f.elements.note.value = k.note;
+  $('#kwDialog').showModal();
+}
+
+function saveKwDialog() {
+  const f = $('#kwForm');
+  const k = data.keywords.find(x => x.name === f.dataset.kw);
+  const name = norm(f.elements.kwName.value);
+  if (!name) return false;
+  if (name !== k.name) {
+    if (data.keywords.some(x => x.name === name)) { toast(`${name} is already in the list`); return false; }
+    renameKeyword(k.name, name);
+    k.name = name;
+  }
+  k.gainedAt = f.elements.gainedAt.value.trim().replace(/^#/, '');
+  k.note = f.elements.note.value.trim();
+  commit();
+  return true;
+}
+
+// ---------- Loading & saving ----------
+
+const b64encode = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => { bin += String.fromCharCode(b); }); return btoa(bin); };
+const b64decode = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g, '')), c => c.charCodeAt(0)));
+
+async function gh(path, opts = {}) {
+  const res = await fetch('https://api.github.com' + path, {
+    ...opts,
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${conn.token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(opts.body ? { 'Content-Type': 'application/json' } : {}),
+    },
+  });
+  if (!res.ok) {
+    const err = new Error((await res.json().catch(() => ({}))).message || res.statusText);
+    err.status = res.status;
+    throw err;
+  }
+  return res.json();
+}
+
+function repoSettings() {
+  try { const saved = JSON.parse(store.get(LS.repo)); if (saved?.owner) return saved; } catch {}
+  let { owner, repo, branch } = CONFIG;
+  const m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+  if (m) {
+    const seg = location.pathname.split('/').filter(Boolean)[0];
+    owner ||= m[1];
+    repo ||= seg && !seg.includes('.') ? seg : location.hostname;
+  }
+  return { owner, repo, branch };
+}
+
+function restoreDraft() {
+  let draft;
+  try { draft = JSON.parse(store.get(LS.draft)); } catch {}
+  if (!draft?.data) return;
+  if (JSON.stringify(migrate(draft.data)) === JSON.stringify(data)) { store.del(LS.draft); return; }
+  if (confirm(`There are unsaved changes in this browser from ${fmtDate(draft.at)}. Restore them?`)) {
+    data = migrate(draft.data);
+    dirty = true;
+  } else {
+    store.del(LS.draft);
+  }
+}
+
+async function connect(c) {
+  conn = c;
+  await gh(`/repos/${c.owner}/${c.repo}`);
+  try {
+    const file = await gh(`/repos/${c.owner}/${c.repo}/contents/${CONFIG.path}?ref=${encodeURIComponent(c.branch)}`);
+    data = migrate(JSON.parse(b64decode(file.content)));
+    remoteSha = file.sha;
+  } catch (e) {
+    if (e.status !== 404) throw e;
+    data = emptyData();
+    remoteSha = null;
+  }
+  store.set(LS.token, c.token);
+  store.set(LS.repo, JSON.stringify({ owner: c.owner, repo: c.repo, branch: c.branch }));
+  mode = 'github';
+  dirty = false;
+  restoreDraft();
+  render();
+}
+
+async function save() {
+  data.updatedAt = new Date().toISOString();
+  const json = JSON.stringify(data, null, 2) + '\n';
+  if (mode === 'local') {
+    const a = Object.assign(document.createElement('a'), {
+      href: URL.createObjectURL(new Blob([json], { type: 'application/json' })),
+      download: 'data.json',
+    });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    dirty = false;
+    store.del(LS.draft);
+    renderChrome();
+    toast('Downloaded data.json — commit it to the repository to publish');
+    return;
+  }
+  saving = true;
+  renderChrome();
+  try {
+    const res = await gh(`/repos/${conn.owner}/${conn.repo}/contents/${CONFIG.path}`, {
+      method: 'PUT',
+      body: JSON.stringify({ message: 'Update campaign tracker', content: b64encode(json), branch: conn.branch, ...(remoteSha ? { sha: remoteSha } : {}) }),
+    });
+    remoteSha = res.content.sha;
+    dirty = false;
+    store.del(LS.draft);
+    toast('Saved — viewers see it within a minute or two');
+  } catch (e) {
+    toast(e.status === 409 ? 'data.json changed on GitHub since you loaded it. Log out and back in to reload it.' : `Save failed: ${e.message}`);
+  } finally {
+    saving = false;
+    renderChrome();
+  }
+}
+
+async function load() {
+  try {
+    const res = await fetch(`${CONFIG.path}?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(res.status);
+    data = migrate(await res.json());
+    render();
+  } catch {
+    render();
+    $('#view').insertAdjacentHTML('afterbegin', `<p class="empty">Couldn’t load <code>${CONFIG.path}</code>. If you opened the file directly, serve the folder instead (e.g. <code>python3 -m http.server</code>).</p>`);
+  }
+  const token = store.get(LS.token);
+  if (token) {
+    connect({ ...repoSettings(), token }).catch(e => {
+      mode = 'view';
+      conn = null;
+      toast(`Editor login failed: ${e.message}`);
+      render();
+    });
+  }
+}
+
+// ---------- Events ----------
+
+const actions = {
+  tab(el) { tab = el.dataset.v; history.replaceState(null, '', '#' + tab); render(); window.scrollTo(0, 0); },
+  status(el) { ui.status = el.dataset.v; render(); },
+  'quest-filter'(el) { ui.quests = el.dataset.v; render(); },
+  'goto-loc'(el) {
+    const loc = findLoc(el.dataset.loc);
+    $('dialog[open]')?.close();
+    tab = 'locations';
+    ui.q = '#' + loc.number;
+    ui.status = 'all';
+    history.replaceState(null, '', '#locations');
+    render();
+    window.scrollTo(0, 0);
+  },
+  'toggle-opt'(el) { const o = findLoc(el.dataset.loc).options[el.dataset.i]; o.done = !o.done; commit(); },
+  'toggle-quest'(el) { const q = findLoc(el.dataset.loc).quests[el.dataset.i]; q.done = !q.done; commit(); },
+  'new-loc'() { openLocDialog(null); },
+  'edit-loc'(el) { openLocDialog(el.dataset.loc); },
+  'add-opt'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'kw')); },
+  'add-none'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'none')); },
+  'add-quest'() { appendRow($('#questRows'), questRowHtml({ name: '', keyword: '', done: false })); },
+  'remove-row'(el) { el.closest('li').remove(); },
+  'delete-loc'() {
+    const loc = findLoc($('#locForm').dataset.id);
+    if (!confirm(`Delete location #${loc.number}${loc.name ? ` (${loc.name})` : ''} and its quests?`)) return;
+    data.locations = data.locations.filter(l => l !== loc);
+    $('#locDialog').close();
+    commit();
+  },
+  'edit-kw'(el) { openKwDialog(el.dataset.kw); },
+  'delete-kw'() {
+    const name = $('#kwForm').dataset.kw;
+    if (!confirm(`Remove ${name} from the keywords we have? Locations that need it will show it as missing again.`)) return;
+    data.keywords = data.keywords.filter(k => k.name !== name);
+    $('#kwDialog').close();
+    commit();
+  },
+  'got-kw'(el) { addKeyword(el.dataset.kw); },
+  'close-dialog'(el) { el.closest('dialog').close(); },
+  editor() {
+    const f = $('#connectForm');
+    const s = repoSettings();
+    f.elements.owner.value = s.owner;
+    f.elements.repo.value = s.repo;
+    f.elements.branch.value = s.branch || 'main';
+    $('#connectError').hidden = true;
+    $('#connectDialog').showModal();
+    (s.owner && s.repo ? f.elements.token : f.elements.owner).focus();
+  },
+  'edit-local'() {
+    $('#connectDialog').close();
+    mode = 'local';
+    restoreDraft();
+    render();
+    toast('Editing locally — use “Download data.json” to export your changes');
+  },
+  save() { save(); },
+  disconnect() {
+    if (dirty && !confirm('You have unsaved changes. They stay as a draft in this browser. Leave the editor anyway?')) return;
+    store.del(LS.token);
+    location.reload();
+  },
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (el && actions[el.dataset.action]) actions[el.dataset.action](el, e);
+});
+
+document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+
+document.addEventListener('input', e => {
+  if (e.target.dataset.input === 'q') { ui.q = e.target.value; $('#locList').innerHTML = locList(owned()); }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.dataset.input === 'sort') { ui.sort = e.target.value; $('#locList').innerHTML = locList(owned()); }
+});
+
+document.addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.id === 'locForm') {
+    if (saveLocDialog()) $('#locDialog').close();
+  } else if (f.id === 'kwForm') {
+    if (saveKwDialog()) $('#kwDialog').close();
+  } else if (f.dataset.form === 'add-kw') {
+    if (addKeyword(f.elements.kw.value, f.elements.gainedAt.value)) $('[data-form=add-kw] [name=kw]').focus();
+  } else if (f.id === 'connectForm') {
+    const el = f.elements;
+    const c = { owner: el.owner.value.trim(), repo: el.repo.value.trim(), branch: el.branch.value.trim() || 'main', token: el.token.value.trim() };
+    if (!c.owner || !c.repo || !c.token) return;
+    const btn = f.querySelector('.btn.primary');
+    btn.disabled = true;
+    try {
+      await connect(c);
+      $('#connectDialog').close();
+      el.token.value = '';
+      toast('Connected — remember to hit Save after making changes');
+    } catch (err) {
+      conn = null;
+      $('#connectError').textContent = err.status === 401 ? 'GitHub rejected this token.'
+        : err.status === 404 ? 'Repository not found, or the token has no access to it.' : `Couldn’t connect: ${err.message}`;
+      $('#connectError').hidden = false;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+});
+
+window.addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+
+load();
+</script>
+</body>
+</html>
