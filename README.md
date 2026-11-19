@@ -4,10 +4,11 @@ A single-page tracker for our Sleeping Gods campaign: the keywords we have, the 
 
 - `index.html` is the whole app (no build step).
 - `data.json` holds the campaign data. Every save from the page commits this file.
+- `atlas.json` maps location numbers to atlas pages, e.g. `{ "12": "3" }`. When you add a location without an atlas page, the page is filled in from this file.
 
 ## What it tracks
 
-- **Keywords** we have, where we gained them and where they are used.
+- **Keywords** we have, with their quest number (if known), where we gained them and where they are used. Tick a keyword off when its quest is complete. A completed keyword still counts as one we have.
 - **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it.
 - **Quests** a location gave us, each with an optional related keyword. Tick a quest off when it's done.
 

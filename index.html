@@ -153,6 +153,7 @@ button.tick:hover { border-color: var(--accent); }
 .list > li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 10px 14px; border-top: 1px solid var(--line); }
 .list > li:first-child { border-top: 0; }
 .list > li.done .qname { text-decoration: line-through; opacity: .6; }
+.list > li.done > .kw { opacity: .55; }
 .locrow { display: flex; align-items: center; gap: 10px; min-width: 0; border: 0; background: none; padding: 0; text-align: left; cursor: pointer; }
 .locrow b { display: block; line-height: 1.2; }
 .locrow small { color: var(--muted); }
@@ -269,6 +270,7 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
   <form id="kwForm" novalidate>
     <h2>Edit keyword</h2>
     <label class="field">Keyword<input name="kwName" required autocomplete="off"></label>
+    <label class="field">Quest #<input name="quest" autocomplete="off" placeholder="Leave empty if not known yet"></label>
     <label class="field">Gained at location #<input name="gainedAt" autocomplete="off"></label>
     <label class="field">Note<input name="note" autocomplete="off"></label>
     <footer>
@@ -305,7 +307,7 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
 'use strict';
 
 // Repo settings for saving. On <owner>.github.io/<repo>/ owner and repo are detected automatically.
-const CONFIG = { owner: '', repo: '', branch: 'main', path: 'data.json' };
+const CONFIG = { owner: '', repo: '', branch: 'main', path: 'data.json', atlas: 'atlas.json' };
 
 const LS = { token: 'sgt-token', repo: 'sgt-repo', draft: 'sgt-draft' };
 const TABS = ['overview', 'locations', 'keywords', 'quests'];
@@ -313,6 +315,7 @@ const STATUS = { ready: 'Ready', locked: 'Needs keyword', cleared: 'Done' };
 const STATUS_ORDER = { ready: 0, locked: 1, cleared: 2 };
 
 let data = emptyData();
+let atlas = {}; // location number -> atlas page, from atlas.json
 let mode = 'view'; // 'view' | 'local' | 'github'
 let conn = null;
 let remoteSha = null;
@@ -345,7 +348,7 @@ function migrate(d) {
   return {
     version: 1,
     updatedAt: d.updatedAt ?? null,
-    keywords: (d.keywords ?? []).map(k => ({ name: norm(k.name), gainedAt: k.gainedAt ?? '', note: k.note ?? '' })).filter(k => k.name),
+    keywords: (d.keywords ?? []).map(k => ({ name: norm(k.name), quest: String(k.quest ?? ''), done: !!k.done, gainedAt: k.gainedAt ?? '', note: k.note ?? '' })).filter(k => k.name),
     locations: (d.locations ?? []).map(l => ({
       id: l.id || uid(),
       number: String(l.number ?? ''),
@@ -360,7 +363,8 @@ function migrate(d) {
 
 // ---------- Derived state ----------
 
-const owned = () => new Set(data.keywords.map(k => k.name));
+const owned = () => new Map(data.keywords.map(k => [k.name, k]));
+const atlasOf = loc => loc.atlasPage || atlas[loc.number] || '';
 
 function optionState(o, have) {
   if (o.done) return 'done';
@@ -405,7 +409,7 @@ function matches(loc, q) {
   if (!q) return true;
   if (q.startsWith('#')) return loc.number === q.slice(1).trim();
   const hay = [
-    loc.number, loc.name, loc.notes, loc.atlasPage && 'p' + loc.atlasPage,
+    loc.number, loc.name, loc.notes, atlasOf(loc) && 'p' + atlasOf(loc),
     ...loc.options.flatMap(o => [...o.keywords, o.note]),
     ...loc.quests.flatMap(x => [x.name, x.keyword]),
   ].join(' ').toLowerCase();
@@ -415,8 +419,9 @@ function matches(loc, q) {
 // ---------- Rendering helpers ----------
 
 function kwChip(k, have) {
-  const h = have.has(k);
-  return `<span class="kw ${h ? 'have' : 'miss'}" title="${h ? 'We have this keyword' : 'We don’t have this keyword yet'}">${esc(k)}</span>`;
+  const h = have.get(k);
+  const title = h ? `We have this keyword · ${h.quest ? `quest #${h.quest}` : 'quest # unknown'}` : 'We don’t have this keyword yet';
+  return `<span class="kw ${h ? 'have' : 'miss'}" title="${esc(title)}">${esc(k)}</span>`;
 }
 
 const optChips = (o, have) => o.keywords.length
@@ -473,7 +478,7 @@ function viewOverview(have) {
   const readyHtml = ready.length ? `<ul class="list">${ready.map(loc => `<li>
       <button class="locrow" data-action="goto-loc" data-loc="${loc.id}">
         <span class="locnum sm">${esc(loc.number)}</span>
-        <span><b>${locTitle(loc)}</b>${loc.atlasPage ? `<small>Atlas p. ${esc(loc.atlasPage)}</small>` : ''}</span>
+        <span><b>${locTitle(loc)}</b>${atlasOf(loc) ? `<small>Atlas p. ${esc(atlasOf(loc))}</small>` : ''}</span>
       </button>
       <span class="chips push">${loc.options.filter(o => optionState(o, have) === 'open').map(o => optChips(o, have)).join('<span class="sep">or</span>')}</span>
     </li>`).join('')}</ul>` : empty('Nothing waiting right now. New keywords will unlock more options.');
@@ -509,7 +514,7 @@ function locCard(loc, have) {
   return `<article class="card">
     <header>
       <span class="locnum">${esc(loc.number)}</span>
-      <div class="title"><h3>${locTitle(loc)}</h3>${loc.atlasPage ? `<span class="atlas">Atlas p. ${esc(loc.atlasPage)}</span>` : ''}</div>
+      <div class="title"><h3>${locTitle(loc)}</h3>${atlasOf(loc) ? `<span class="atlas">Atlas p. ${esc(atlasOf(loc))}</span>` : ''}</div>
       <span class="status ${st}">${STATUS[st]}</span>
     </header>
     ${opts ? `<h4>Options</h4><ul>${opts}</ul>` : ''}
@@ -524,7 +529,7 @@ function locList(have) {
   const status = l => locationStatus(l, have);
   const sorters = {
     number: byNumber,
-    atlas: (a, b) => (num(a.atlasPage) - num(b.atlasPage)) || byNumber(a, b),
+    atlas: (a, b) => (num(atlasOf(a)) - num(atlasOf(b))) || byNumber(a, b),
     status: (a, b) => (STATUS_ORDER[status(a)] - STATUS_ORDER[status(b)]) || byNumber(a, b),
   };
   const list = data.locations
@@ -550,11 +555,15 @@ function viewLocations(have) {
 }
 
 function viewKeywords(have) {
-  const kws = [...data.keywords].sort((a, b) => a.name.localeCompare(b.name));
+  const kws = [...data.keywords].sort((a, b) => (a.done - b.done) || a.name.localeCompare(b.name));
+  const complete = kws.filter(k => k.done).length;
   const rows = kws.map(k => {
     const u = usages(k.name);
-    return `<li>
+    return `<li class="${k.done ? 'done' : ''}">
+      ${tick(k.done, 'toggle-kw', `data-kw="${esc(k.name)}"`, k.done ? 'Mark keyword not complete' : 'Mark keyword complete')}
       ${kwChip(k.name, have)}
+      ${k.done ? '<span class="status cleared">Complete</span>' : ''}
+      <span class="meta">${k.quest ? `quest #${esc(k.quest)}` : '<span class="hint">quest # unknown</span>'}</span>
       ${k.gainedAt ? `<span class="meta">gained at ${locRefByNumber(k.gainedAt)}</span>` : ''}
       ${u.opts.length ? `<span class="meta">used at ${u.opts.map(({ loc, o }) => locRef(loc, o.done)).join(' ')}</span>` : ''}
       ${u.quests.length ? `<span class="meta">quest ${u.quests.map(({ q }) => `<span class="${q.done ? 'strike' : ''}">“${esc(q.name)}”</span>`).join(', ')}</span>` : ''}
@@ -564,11 +573,12 @@ function viewKeywords(have) {
   }).join('');
   const add = editing() ? `<form class="toolbar" data-form="add-kw">
       <input class="search" name="kw" list="kwAll" required autocomplete="off" placeholder="New keyword" aria-label="New keyword">
+      <input class="search short" name="quest" autocomplete="off" placeholder="Quest #" aria-label="Quest number (if known)">
       <input class="search short" name="gainedAt" autocomplete="off" placeholder="Gained at #" aria-label="Gained at location number">
       <button class="btn primary">Add keyword</button>
     </form>` : '';
   return `${add}
-    <section class="section"><h2>Keywords we have <small>${kws.length}</small></h2>${kws.length ? `<ul class="list">${rows}</ul>` : empty('No keywords yet.')}</section>
+    <section class="section"><h2>Keywords we have <small>${kws.length}${complete ? ` · ${complete} complete` : ''}</small></h2>${kws.length ? `<ul class="list">${rows}</ul>` : empty('No keywords yet.')}</section>
     <section class="section"><h2>Still looking for <small>mentioned by locations or quests</small></h2>${wantedList(wantedKeywords(have), have)}</section>`;
 }
 
@@ -595,7 +605,7 @@ function render() {
   const counts = { locations: data.locations.length, keywords: data.keywords.length, quests: allQuests().filter(x => !x.q.done).length };
   document.querySelectorAll('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count]; });
   $('#view').innerHTML = VIEWS[tab](have);
-  $('#kwAll').innerHTML = [...new Set([...have, ...wantedKeywords(have).map(w => w.name)])].sort()
+  $('#kwAll').innerHTML = [...new Set([...have.keys(), ...wantedKeywords(have).map(w => w.name)])].sort()
     .map(k => `<option value="${esc(k)}">`).join('');
   renderChrome();
 }
@@ -634,11 +644,11 @@ function commit() {
 
 const findLoc = id => data.locations.find(l => l.id === id);
 
-function addKeyword(name, gainedAt = '') {
+function addKeyword(name, gainedAt = '', quest = '') {
   const n = norm(name);
   if (!n) return false;
   if (data.keywords.some(k => k.name === n)) { toast(`${n} is already in the list`); return false; }
-  data.keywords.push({ name: n, gainedAt: gainedAt.trim().replace(/^#/, ''), note: '' });
+  data.keywords.push({ name: n, quest: quest.trim().replace(/^#/, ''), done: false, gainedAt: gainedAt.trim().replace(/^#/, ''), note: '' });
   commit();
   toast(`Added ${n}`);
   return true;
@@ -682,6 +692,7 @@ function openLocDialog(id) {
   $('#locTitle').textContent = loc ? `Location #${loc.number}` : 'New location';
   el.number.value = loc?.number ?? '';
   el.atlasPage.value = loc?.atlasPage ?? '';
+  suggestAtlasPage();
   el.locName.value = loc?.name ?? '';
   el.notes.value = loc?.notes ?? '';
   $('#optRows').innerHTML = (loc?.options ?? []).map(o => optRowHtml(o, o.keywords.length ? 'kw' : 'none')).join('');
@@ -689,6 +700,12 @@ function openLocDialog(id) {
   $('#locForm [data-action=delete-loc]').hidden = !loc;
   $('#locDialog').showModal();
   if (!loc) el.number.focus();
+}
+
+function suggestAtlasPage() {
+  const el = $('#locForm').elements;
+  const page = atlas[el.number.value.trim().replace(/^#/, '')];
+  el.atlasPage.placeholder = page ? `${page} (from map)` : '';
 }
 
 function saveLocDialog() {
@@ -709,7 +726,7 @@ function saveLocDialog() {
     const keyword = norm(field(li, 'qkw').value);
     return name || keyword ? { name: name || 'Quest', keyword, done: field(li, 'done').checked } : null;
   }).filter(Boolean);
-  const loc = { id: id || uid(), number, name: el.locName.value.trim(), atlasPage: el.atlasPage.value.trim(), options, quests, notes: el.notes.value.trim() };
+  const loc = { id: id || uid(), number, name: el.locName.value.trim(), atlasPage: el.atlasPage.value.trim() || atlas[number] || '', options, quests, notes: el.notes.value.trim() };
   const i = data.locations.findIndex(l => l.id === loc.id);
   if (i >= 0) data.locations[i] = loc; else data.locations.push(loc);
   commit();
@@ -724,6 +741,7 @@ function openKwDialog(name) {
   const f = $('#kwForm');
   f.dataset.kw = k.name;
   f.elements.kwName.value = k.name;
+  f.elements.quest.value = k.quest;
   f.elements.gainedAt.value = k.gainedAt;
   f.elements.note.value = k.note;
   $('#kwDialog').showModal();
@@ -739,6 +757,7 @@ function saveKwDialog() {
     renameKeyword(k.name, name);
     k.name = name;
   }
+  k.quest = f.elements.quest.value.trim().replace(/^#/, '');
   k.gainedAt = f.elements.gainedAt.value.trim().replace(/^#/, '');
   k.note = f.elements.note.value.trim();
   commit();
@@ -849,6 +868,10 @@ async function save() {
 }
 
 async function load() {
+  fetch(`${CONFIG.atlas}?t=${Date.now()}`, { cache: 'no-store' })
+    .then(res => res.ok ? res.json() : {})
+    .then(map => { atlas = map; render(); })
+    .catch(() => {});
   try {
     const res = await fetch(`${CONFIG.path}?t=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error(res.status);
@@ -886,6 +909,7 @@ const actions = {
     window.scrollTo(0, 0);
   },
   'toggle-opt'(el) { const o = findLoc(el.dataset.loc).options[el.dataset.i]; o.done = !o.done; commit(); },
+  'toggle-kw'(el) { const k = data.keywords.find(x => x.name === el.dataset.kw); k.done = !k.done; commit(); },
   'toggle-quest'(el) { const q = findLoc(el.dataset.loc).quests[el.dataset.i]; q.done = !q.done; commit(); },
   'new-loc'() { openLocDialog(null); },
   'edit-loc'(el) { openLocDialog(el.dataset.loc); },
@@ -944,6 +968,7 @@ document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e =
 
 document.addEventListener('input', e => {
   if (e.target.dataset.input === 'q') { ui.q = e.target.value; $('#locList').innerHTML = locList(owned()); }
+  if (e.target === $('#locForm').elements.number) suggestAtlasPage();
 });
 
 document.addEventListener('change', e => {
@@ -958,7 +983,7 @@ document.addEventListener('submit', async e => {
   } else if (f.id === 'kwForm') {
     if (saveKwDialog()) $('#kwDialog').close();
   } else if (f.dataset.form === 'add-kw') {
-    if (addKeyword(f.elements.kw.value, f.elements.gainedAt.value)) $('[data-form=add-kw] [name=kw]').focus();
+    if (addKeyword(f.elements.kw.value, f.elements.gainedAt.value, f.elements.quest.value)) $('[data-form=add-kw] [name=kw]').focus();
   } else if (f.id === 'connectForm') {
     const el = f.elements;
     const c = { owner: el.owner.value.trim(), repo: el.repo.value.trim(), branch: el.branch.value.trim() || 'main', token: el.token.value.trim() };
