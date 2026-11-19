@@ -38,6 +38,8 @@
   --gold-hi: #e3b85c;
   --adv-bg: #f3e3bf;
   --adv-ink: #6f5110;
+  --dgn-bg: #f4dcd8;
+  --dgn-ink: #8c2b22;
   --shadow: 0 1px 2px rgba(70, 50, 20, .06), 0 6px 16px rgba(70, 50, 20, .06);
   --radius: 12px;
   color-scheme: light;
@@ -69,6 +71,8 @@
     --header-2: #081013;
     --adv-bg: #3a2f17;
     --adv-ink: #e8c97f;
+    --dgn-bg: #3d1d1b;
+    --dgn-ink: #f2a196;
     --shadow: 0 1px 2px rgba(0, 0, 0, .3);
     color-scheme: dark;
   }
@@ -136,6 +140,9 @@ select { padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; 
 .status.locked { background: var(--locked-bg); color: var(--locked); }
 .status.cleared { background: var(--cleared-bg); color: var(--cleared); }
 .adv { display: inline-flex; padding: 2px 8px; border-radius: 6px; background: var(--adv-bg); color: var(--adv-ink); font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.dgn { display: inline-flex; padding: 2px 8px; border-radius: 6px; background: var(--dgn-bg); color: var(--dgn-ink); font-size: .8rem; font-weight: 700; white-space: nowrap; vertical-align: middle; }
+.card h3 .dgn { margin-left: 6px; font-size: .7rem; }
+.card li.done .dgn { text-decoration: line-through; opacity: .5; }
 .avail { font-size: .75rem; font-weight: 700; color: var(--ready); }
 .locref { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 0 8px; font-size: .8rem; font-weight: 600; color: var(--ink-2); cursor: pointer; }
 .locref.done { text-decoration: line-through; opacity: .6; }
@@ -189,7 +196,7 @@ button.tick:hover { border-color: var(--accent); }
 .card h4 { margin: 6px 0 0; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .card li { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.card li.done .chips, .card li.done .adv { text-decoration: line-through; opacity: .5; }
+.card li.done .chips { text-decoration: line-through; opacity: .5; }
 .card .note { font-size: .88rem; color: var(--ink-2); }
 .card .notes { margin: 4px 0 0; padding-top: 8px; border-top: 1px dashed var(--line); font-size: .9rem; color: var(--ink-2); white-space: pre-wrap; }
 .card .link { align-self: flex-start; margin-top: 4px; }
@@ -209,6 +216,8 @@ fieldset { margin: 0; padding: 8px 12px 12px; border: 1px solid var(--line); bor
 legend { padding: 0 6px; font-size: .85rem; font-weight: 700; }
 .rows { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .rows li { display: grid; grid-template-columns: auto 1.3fr 1fr auto; grid-template-areas: "chk main extra x"; gap: 8px; align-items: center; }
+#dungeonField .c-chk input { width: 18px; height: 18px; accent-color: var(--ready); }
+.rows li[data-kind=adv] { grid-template-columns: auto 130px 1fr auto; }
 .rows .c-chk { grid-area: chk; display: flex; align-items: center; gap: 4px; font-size: .85rem; }
 .rows .c-chk input { width: 18px; height: 18px; accent-color: var(--ready); }
 .rows .c-main { grid-area: main; display: flex; align-items: center; gap: 6px; }
@@ -230,7 +239,7 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
   .stats { grid-template-columns: repeat(2, 1fr); }
   .fields { grid-template-columns: 1fr 1fr; }
   .fields .wide { grid-column: 1 / -1; }
-  .rows li { grid-template-columns: auto 1fr auto; grid-template-areas: "chk main x" ". extra extra"; }
+  .rows li, .rows li[data-kind=adv] { grid-template-columns: auto 1fr auto; grid-template-areas: "chk main x" ". extra extra"; }
   .search.short { flex: 1 1 120px; }
   .kwtable, .kwtable tbody { display: block; }
   .kwtable thead { display: none; }
@@ -288,6 +297,10 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
       <legend>Adventure cards</legend>
       <ul class="rows" id="advRows"></ul>
       <div class="rowbtns"><button type="button" class="btn sm" data-action="add-adv">+ Adventure card</button></div>
+    </fieldset>
+    <fieldset id="dungeonField" hidden>
+      <legend>Dungeon</legend>
+      <label class="c-chk"><input type="checkbox" name="dungeonDone"> This location has a dungeon (Dungeons expansion). Tick when done.</label>
     </fieldset>
     <label class="field">Notes<textarea name="notes" rows="2"></textarea></label>
     <footer>
@@ -399,8 +412,9 @@ function migrate(d) {
       name: l.name ?? '',
       atlasPage: String(l.atlasPage ?? ''),
       options: (l.options ?? []).map(o => ({ keywords: (o.keywords ?? []).map(norm).filter(Boolean), done: !!o.done, note: o.note ?? '' })),
-      adventures: (l.adventures ?? []).map(a => ({ card: cardNumber(a.card ?? ''), done: !!a.done, note: a.note ?? '' })).filter(a => a.card),
+      adventures: (l.adventures ?? []).map(a => ({ card: cardNumber(a.card ?? ''), name: a.name ?? a.note ?? '' })).filter(a => a.card),
       notes,
+      dungeonDone: !!l.dungeonDone,
       created: l.created ?? '',
       updated: l.updated ?? '',
     };
@@ -415,6 +429,7 @@ const locNumber = s => String(s).trim().replace(/^#/, '').toUpperCase();
 const cardNumber = s => String(s).trim().replace(/^#/, '');
 const mapEntry = n => atlas[locNumber(n)] ?? {};
 const atlasOf = loc => loc.atlasPage || mapEntry(loc.number).page || '';
+const hasDungeon = loc => !!mapEntry(loc.number).dungeon;
 
 function optionState(o, have) {
   if (o.done) return 'done';
@@ -423,7 +438,7 @@ function optionState(o, have) {
 
 function locationStatus(loc, have) {
   const states = loc.options.map(o => optionState(o, have));
-  if (states.includes('open') || loc.adventures.some(a => !a.done)) return 'ready';
+  if (states.includes('open') || (hasDungeon(loc) && !loc.dungeonDone)) return 'ready';
   if (states.includes('locked')) return 'locked';
   return 'cleared';
 }
@@ -455,7 +470,8 @@ function matches(loc, q) {
   const hay = [
     loc.number, loc.name || mapEntry(loc.number).name, loc.notes, atlasOf(loc) && 'p' + atlasOf(loc),
     ...loc.options.flatMap(o => [...o.keywords, o.note]),
-    ...loc.adventures.flatMap(a => ['adventure ' + a.card, a.note]),
+    ...loc.adventures.flatMap(a => ['adventure ' + a.card, a.name]),
+    hasDungeon(loc) && 'dungeon',
     ...questsAt(loc).flatMap(k => [k.name, k.quest && 'card' + k.quest]),
   ].join(' ').toLowerCase();
   return hay.includes(q.toLowerCase());
@@ -489,7 +505,7 @@ function locRefByNumber(n) {
 const locTitle = loc => esc(loc.name || mapEntry(loc.number).name || `Location ${loc.number}`);
 const empty = msg => `<p class="empty">${msg}</p>`;
 
-const advChip = a => `<span class="adv" title="Adventure card">Adventure #${esc(a.card)}</span>`;
+const advChip = a => `<span class="adv" title="Adventure card ${esc(a.card)}">#${esc(a.card)}</span>`;
 const cardLabel = k => `<span class="meta">${k.quest ? `card #${esc(k.quest)}` : '<span class="hint">card # unknown</span>'}</span>`;
 const kwTick = k => tick(k.done, 'toggle-kw', `data-kw="${esc(k.name)}"`, k.done ? 'Mark quest open' : 'Mark quest complete');
 
@@ -530,7 +546,7 @@ function viewOverview(have) {
       </button>
       <span class="chips push">
         ${loc.options.filter(o => optionState(o, have) === 'open').map(o => optChips(o, have)).join('<span class="sep">or</span>')}
-        ${loc.adventures.filter(a => !a.done).map(advChip).join('')}
+        ${hasDungeon(loc) && !loc.dungeonDone ? '<span class="dgn">Dungeon</span>' : ''}
       </span>
     </li>`).join('')}</ul>` : empty('Nothing waiting right now. New keywords will unlock more options.');
 
@@ -559,11 +575,7 @@ function locCard(loc, have) {
       ${o.note ? `<span class="note">${esc(o.note)}</span>` : ''}
     </li>`;
   }).join('');
-  const advs = loc.adventures.map((a, i) => `<li class="${a.done ? 'done' : ''}">
-      ${tick(a.done, 'toggle-adv', `data-loc="${loc.id}" data-i="${i}"`, a.done ? 'Mark adventure not done' : 'Tick off adventure')}
-      ${advChip(a)}
-      ${a.note ? `<span class="note">${esc(a.note)}</span>` : ''}
-    </li>`).join('');
+  const advs = loc.adventures.map(a => `<li>${advChip(a)}${a.name ? `<span>${esc(a.name)}</span>` : ''}</li>`).join('');
   const quests = questsAt(loc).sort(byQuest).map(k => `<li class="${k.done ? 'done' : ''}">
       ${kwTick(k)}
       ${kwChip(k.name, have)}
@@ -572,12 +584,16 @@ function locCard(loc, have) {
   return `<article class="card">
     <header>
       <span class="locnum">${esc(loc.number)}</span>
-      <div class="title"><h3>${locTitle(loc)}</h3>${sub ? `<span class="atlas">${sub}</span>` : ''}</div>
+      <div class="title"><h3>${locTitle(loc)}${hasDungeon(loc) ? '<span class="dgn">Dungeon</span>' : ''}</h3>${sub ? `<span class="atlas">${sub}</span>` : ''}</div>
       <span class="status ${st}">${STATUS[st]}</span>
     </header>
     ${opts ? `<h4>Options</h4><ul>${opts}</ul>` : ''}
     ${quests ? `<h4>Quests</h4><ul>${quests}</ul>` : ''}
     ${advs ? `<h4>Adventure cards</h4><ul>${advs}</ul>` : ''}
+    ${hasDungeon(loc) ? `<h4>Dungeon</h4><ul><li class="${loc.dungeonDone ? 'done' : ''}">
+      ${tick(loc.dungeonDone, 'toggle-dungeon', `data-loc="${loc.id}"`, loc.dungeonDone ? 'Mark dungeon not done' : 'Tick off dungeon')}
+      <span class="dgn">Dungeon</span>${loc.dungeonDone ? '' : '<span class="avail">can be done</span>'}
+    </li></ul>` : ''}
     ${loc.notes ? `<p class="notes">${esc(loc.notes)}</p>` : ''}
     ${editing() ? `<button class="link" data-action="edit-loc" data-loc="${loc.id}">Edit</button>` : ''}
   </article>`;
@@ -733,9 +749,8 @@ const optRowHtml = (o, kind) => `<li data-kind="${kind}">
 </li>`;
 
 const advRowHtml = a => `<li data-kind="adv">
-  <label class="c-chk"><input type="checkbox" name="done" ${a.done ? 'checked' : ''}>Done</label>
-  <span class="c-main"><input name="card" autocomplete="off" value="${esc(a.card)}" placeholder="Adventure card #" aria-label="Adventure card number"></span>
-  <input class="c-extra" name="note" autocomplete="off" value="${esc(a.note)}" placeholder="Note" aria-label="Note">
+  <span class="c-main"><input name="card" autocomplete="off" inputmode="numeric" value="${esc(a.card)}" placeholder="Adventure card #" aria-label="Adventure card number"></span>
+  <input class="c-extra" name="advname" autocomplete="off" value="${esc(a.name)}" placeholder="Name" aria-label="Adventure card name">
   <button type="button" class="c-x" data-action="remove-row" aria-label="Remove">✕</button>
 </li>`;
 
@@ -762,6 +777,7 @@ function openLocDialog(id) {
   suggestFromMap();
   el.locName.value = loc?.name ?? '';
   el.notes.value = loc?.notes ?? '';
+  el.dungeonDone.checked = !!loc?.dungeonDone;
   $('#optRows').innerHTML = (loc?.options ?? []).map(o => optRowHtml(o, o.keywords.length ? 'kw' : 'none')).join('');
   $('#advRows').innerHTML = (loc?.adventures ?? []).map(advRowHtml).join('');
   $('#questRows').innerHTML = (loc ? questsAt(loc).sort(byQuest) : []).map(questRowHtml).join('');
@@ -784,6 +800,7 @@ function suggestFromMap() {
   const m = mapEntry(el.number.value);
   el.atlasPage.placeholder = m.page ? `${m.page} (from map)` : '';
   el.locName.placeholder = m.name ? `${m.name} (from map)` : 'Optional';
+  $('#dungeonField').hidden = !m.dungeon;
 }
 
 function saveLocDialog() {
@@ -800,13 +817,13 @@ function saveLocDialog() {
     return { keywords, done: field(li, 'done').checked, note: field(li, 'note').value.trim() };
   }).filter(Boolean);
   const adventures = [...$('#advRows').children]
-    .map(li => ({ card: cardNumber(field(li, 'card').value), done: field(li, 'done').checked, note: field(li, 'note').value.trim() }))
+    .map(li => ({ card: cardNumber(field(li, 'card').value), name: field(li, 'advname').value.trim() }))
     .filter(a => a.card);
   const quests = [...$('#questRows').children]
     .map(li => ({ name: norm(field(li, 'qkw').value), quest: cardNumber(field(li, 'qcard').value), done: field(li, 'done').checked }))
     .filter(q => q.name);
   const m = mapEntry(number);
-  const loc = { id: id || uid(), number, name: el.locName.value.trim() || m.name || '', atlasPage: el.atlasPage.value.trim() || m.page || '', options, adventures, notes: el.notes.value.trim() };
+  const loc = { id: id || uid(), number, name: el.locName.value.trim() || m.name || '', atlasPage: el.atlasPage.value.trim() || m.page || '', options, adventures, notes: el.notes.value.trim(), dungeonDone: !!m.dungeon && el.dungeonDone.checked };
   const i = data.locations.findIndex(l => l.id === loc.id);
   const now = new Date().toISOString();
   Object.assign(loc, { created: i >= 0 ? data.locations[i].created : now, updated: now });
@@ -1002,8 +1019,8 @@ const actions = {
   'edit-loc'(el) { openLocDialog(el.dataset.loc); },
   'add-opt'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'kw')); },
   'add-none'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'none')); },
-  'toggle-adv'(el) { const loc = findLoc(el.dataset.loc); const a = loc.adventures[el.dataset.i]; a.done = !a.done; touch(loc); },
-  'add-adv'() { appendRow($('#advRows'), advRowHtml({ card: '', done: false, note: '' })); },
+  'toggle-dungeon'(el) { const loc = findLoc(el.dataset.loc); loc.dungeonDone = !loc.dungeonDone; touch(loc); },
+  'add-adv'() { appendRow($('#advRows'), advRowHtml({ card: '', name: '' })); },
   'add-quest'() { appendRow($('#questRows'), questRowHtml({ name: '', quest: '', done: false })); },
   'remove-row'(el) { el.closest('li').remove(); },
   'delete-loc'() {
