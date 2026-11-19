@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updatedAt": "2026-11-19T20:08:26.087Z",
+  "version": 3,
+  "updatedAt": "2026-11-19T20:22:52.001Z",
   "keywords": [
     {
       "name": "RAID",
@@ -123,14 +123,14 @@
       "options": [],
       "adventures": [
         {
-          "card": "37",
-          "name": ""
+          "card": "36",
+          "name": "Ship Clinger"
         }
       ],
       "notes": "",
       "dungeonDone": false,
       "created": "",
-      "updated": "2026-11-19T19:56:58.588Z"
+      "updated": "2026-11-19T20:22:34.105Z"
     },
     {
       "id": "gk3pr04g",
@@ -234,7 +234,7 @@
         }
       ],
       "adventures": [],
-      "notes": "",
+      "notes": "Port: Zikura Trading Post",
       "dungeonDone": false,
       "created": "",
       "updated": ""
