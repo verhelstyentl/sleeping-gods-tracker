@@ -8,9 +8,8 @@ A single-page tracker for our Sleeping Gods campaign: the keywords we have, the 
 
 ## What it tracks
 
-- **Keywords** we have, with their quest number (if known), where we gained them and where they are used. Tick a keyword off when its quest is complete. A completed keyword still counts as one we have.
-- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it.
-- **Quests** a location gave us, each with an optional related keyword. Tick a quest off when it's done.
+- **Keywords & quests**: every quest is a keyword plus its quest card number (leave the number empty if you don't know it yet). Each keyword records the location it was gained at and the locations whose options use it. Tick a keyword off when its quest is complete; a completed keyword still counts as one we have.
+- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
 
 Status is worked out automatically:
 
@@ -20,7 +19,7 @@ Status is worked out automatically:
 | Needs keyword | Options remain, but each one needs a keyword we don't have yet. |
 | Done | Every option is ticked off. |
 
-The overview lists locations we can go back to, the keywords we're still looking for, and open quests.
+The overview lists locations we can go back to, the keywords we're still looking for, and open quests by card number.
 
 ## Hosting on GitHub Pages
 
