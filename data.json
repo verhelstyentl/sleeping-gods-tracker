@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T20:08:27.409Z",
+  "updatedAt": "2026-11-20T20:09:31.505Z",
   "keywords": [
     {
       "name": "RAID",
@@ -70,6 +70,13 @@
       "quest": "108",
       "done": false,
       "gainedAt": "190",
+      "note": ""
+    },
+    {
+      "name": "SWIM",
+      "quest": "33",
+      "done": false,
+      "gainedAt": "49",
       "note": ""
     }
   ],
@@ -438,7 +445,7 @@
       "notes": "Bought Painting",
       "dungeonDone": false,
       "created": "2026-11-20T20:08:27.404Z",
-      "updated": "2026-11-20T20:08:27.404Z"
+      "updated": "2026-11-20T20:09:31.501Z"
     }
   ]
 }
