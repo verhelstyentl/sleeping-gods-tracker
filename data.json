@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T20:34:30.085Z",
+  "updatedAt": "2026-11-20T20:38:14.869Z",
   "keywords": [
     {
       "name": "RAID",
@@ -68,7 +68,7 @@
     {
       "name": "SHEPERD",
       "quest": "108",
-      "done": false,
+      "done": true,
       "gainedAt": "190",
       "note": ""
     },
@@ -77,6 +77,20 @@
       "quest": "33",
       "done": false,
       "gainedAt": "49",
+      "note": ""
+    },
+    {
+      "name": "SNAKE",
+      "quest": "111",
+      "done": false,
+      "gainedAt": "96",
+      "note": ""
+    },
+    {
+      "name": "COBRA",
+      "quest": "112",
+      "done": false,
+      "gainedAt": "96",
       "note": ""
     }
   ],
@@ -471,6 +485,31 @@
       "dungeonDone": false,
       "created": "2026-11-20T20:34:30.081Z",
       "updated": "2026-11-20T20:34:30.081Z"
+    },
+    {
+      "id": "1ehxx5es",
+      "number": "96",
+      "name": "",
+      "atlasPage": "10",
+      "options": [
+        {
+          "keywords": [
+            "SNAKE"
+          ],
+          "done": false,
+          "note": ""
+        },
+        {
+          "keywords": [],
+          "done": true,
+          "note": ""
+        }
+      ],
+      "adventures": [],
+      "notes": "Take the offer",
+      "dungeonDone": false,
+      "created": "2026-11-20T20:38:14.863Z",
+      "updated": "2026-11-20T20:38:14.863Z"
     }
   ]
 }
