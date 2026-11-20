@@ -216,7 +216,10 @@ fieldset { margin: 0; padding: 8px 12px 12px; border: 1px solid var(--line); bor
 legend { padding: 0 6px; font-size: .85rem; font-weight: 700; }
 .rows { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .rows li { display: grid; grid-template-columns: auto 1.3fr 1fr auto; grid-template-areas: "chk main extra x"; gap: 8px; align-items: center; }
-#dungeonField .c-chk input { width: 18px; height: 18px; accent-color: var(--ready); }
+#dungeonField { border: 1.5px solid var(--dgn-ink); background: var(--dgn-bg); }
+#dungeonField legend { padding: 2px 10px; border-radius: 6px; background: var(--dgn-ink); color: var(--dgn-bg); letter-spacing: .04em; }
+#dungeonField .c-chk { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+#dungeonField .c-chk input { flex: none; width: 18px; height: 18px; accent-color: var(--ready); }
 .rows li[data-kind=adv] { grid-template-columns: auto 130px 1fr auto; }
 .rows .c-chk { grid-area: chk; display: flex; align-items: center; gap: 4px; font-size: .85rem; }
 .rows .c-chk input { width: 18px; height: 18px; accent-color: var(--ready); }
