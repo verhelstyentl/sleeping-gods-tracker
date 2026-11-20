@@ -571,8 +571,8 @@ function viewOverview(have) {
         <section class="section"><h2>Adventure cards <small>${advs.length}</small></h2>${advHtml}</section>
       </div>
       <div>
-        <section class="section"><h2>Keywords we need</h2>${wantedList(wantedKeywords(have), have)}</section>
         <section class="section"><h2>Open quests</h2>${open.length ? `<ul class="list">${open.map(k => questItem(k, have)).join('')}</ul>` : empty('No open quests.')}</section>
+        <section class="section"><h2>Keywords we need</h2>${wantedList(wantedKeywords(have), have)}</section>
       </div>
     </div>`;
 }
