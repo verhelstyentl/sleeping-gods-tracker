@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T19:45:20.746Z",
+  "updatedAt": "2026-11-20T19:45:52.190Z",
   "keywords": [
     {
       "name": "RAID",
@@ -377,10 +377,10 @@
         }
       ],
       "adventures": [],
-      "notes": "Port: Alzarria\n\n> None => GRANDCHILDREN",
+      "notes": "Port: Alzarria\nChose remove BARNACLE\n> None => GRANDCHILDREN",
       "dungeonDone": false,
       "created": "2026-11-20T19:45:20.745Z",
-      "updated": "2026-11-20T19:45:20.745Z"
+      "updated": "2026-11-20T19:45:52.187Z"
     }
   ]
 }
