@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T19:45:52.190Z",
+  "updatedAt": "2026-11-20T19:50:09.981Z",
   "keywords": [
     {
       "name": "RAID",
@@ -40,7 +40,7 @@
     {
       "name": "BARNACLE",
       "quest": "37",
-      "done": false,
+      "done": true,
       "gainedAt": "36",
       "note": ""
     },
@@ -49,6 +49,20 @@
       "quest": "154",
       "done": false,
       "gainedAt": "26",
+      "note": ""
+    },
+    {
+      "name": "AMBROSIA",
+      "quest": "107",
+      "done": false,
+      "gainedAt": "190",
+      "note": ""
+    },
+    {
+      "name": "JOURNAL",
+      "quest": "109",
+      "done": false,
+      "gainedAt": "190",
       "note": ""
     }
   ],
@@ -377,10 +391,10 @@
         }
       ],
       "adventures": [],
-      "notes": "Port: Alzarria\nChose remove BARNACLE\n> None => GRANDCHILDREN",
+      "notes": "Port: Alzarria\nChose remove BARNACLE => Removed Adventure Card 36\n> None => GRANDCHILDREN\nVisited Bazaar",
       "dungeonDone": false,
       "created": "2026-11-20T19:45:20.745Z",
-      "updated": "2026-11-20T19:45:52.187Z"
+      "updated": "2026-11-20T19:50:09.976Z"
     }
   ]
 }
