@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T21:07:38.592Z",
+  "updatedAt": "2026-11-20T21:17:17.968Z",
   "keywords": [
     {
       "name": "RAID",
@@ -54,14 +54,14 @@
     {
       "name": "AMBROSIA",
       "quest": "107",
-      "done": false,
+      "done": true,
       "gainedAt": "190",
       "note": ""
     },
     {
       "name": "JOURNAL",
       "quest": "109",
-      "done": false,
+      "done": true,
       "gainedAt": "190",
       "note": ""
     },
@@ -91,6 +91,13 @@
       "quest": "112",
       "done": false,
       "gainedAt": "96",
+      "note": ""
+    },
+    {
+      "name": "ROTTEN",
+      "quest": "113",
+      "done": false,
+      "gainedAt": "204",
       "note": ""
     }
   ],
@@ -515,6 +522,31 @@
       "dungeonDone": false,
       "created": "2026-11-20T20:38:14.863Z",
       "updated": "2026-11-20T20:38:14.863Z"
+    },
+    {
+      "id": "bjtkiyef",
+      "number": "204",
+      "name": "",
+      "atlasPage": "11",
+      "options": [
+        {
+          "keywords": [
+            "COBRA"
+          ],
+          "done": true,
+          "note": ""
+        },
+        {
+          "keywords": [],
+          "done": false,
+          "note": ""
+        }
+      ],
+      "adventures": [],
+      "notes": "Help Thoazac",
+      "dungeonDone": false,
+      "created": "2026-11-20T21:17:17.963Z",
+      "updated": "2026-11-20T21:17:17.963Z"
     }
   ]
 }
