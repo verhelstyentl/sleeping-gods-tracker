@@ -117,9 +117,13 @@ main { width: 100%; max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; 
 .hint { font-size: .85rem; color: var(--muted); }
 .empty { text-align: center; color: var(--muted); padding: 28px 16px; border: 1.5px dashed var(--line); border-radius: var(--radius); }
 .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
-.search { flex: 1 1 220px; min-width: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.search { flex: 1 1 220px; min-width: 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .search.short { flex: 0 1 150px; }
-.search.narrow { flex: 0 1 190px; }
+/* Every item grows, so each row of the toolbar spans the full width of the cards below. */
+.toolbar.fill > * { flex: 1 1 auto; }
+.toolbar.fill > .search { flex: 3 1 160px; }
+.toolbar.fill .seg button { flex: 1 1 auto; }
+.toolbar.fill > .btn { flex: 0 0 auto; margin-left: auto; }
 .seg { display: inline-flex; max-width: 100%; overflow-x: auto; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
 .seg button { border: 0; background: none; padding: 6px 10px; border-radius: 7px; font-size: .9rem; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
 .seg button.active { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
@@ -244,7 +248,8 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
   .fields { grid-template-columns: 1fr 1fr; }
   .fields .wide { grid-column: 1 / -1; }
   .rows li, .rows li[data-kind=adv] { grid-template-columns: auto 1fr auto; grid-template-areas: "chk main x" ". extra extra"; }
-  .search.short, .search.narrow { flex: 1 1 120px; }
+  .search.short { flex: 1 1 120px; }
+  .toolbar.fill > .btn { flex: 1 1 auto; }
   .seg button { padding: 6px 8px; }
   .seg .lbl { padding: 0 3px 0 5px; }
   .kwtable, .kwtable tbody { display: block; }
@@ -643,8 +648,8 @@ function viewLocations(have) {
     `<button data-action="status" data-v="${s}" class="${ui.status === s ? 'active' : ''}">${s === 'all' ? 'All' : STATUS[s]} <span class="n">${counts[s]}</span></button>`).join('');
   const sorts = [['added', 'Added'], ['modified', 'Modified'], ['number', 'Number'], ['atlas', 'Atlas'], ['status', 'Status']]
     .map(([v, l]) => `<button data-action="sort" data-v="${v}" class="${ui.sort === v ? 'active' : ''}">${l}</button>`).join('');
-  return `<div class="toolbar">
-      <input class="search narrow" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search… (#12 = exact)" title="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
+  return `<div class="toolbar fill">
+      <input class="search" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search… (#12 = exact)" title="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
       <div class="seg" role="group" aria-label="Filter by status">${seg}</div>
       <div class="seg" role="group" aria-label="Sort"><span class="lbl" aria-hidden="true">Sort</span>${sorts}</div>
       ${editing() ? '<button class="btn primary" data-action="new-loc">+ Location</button>' : ''}
