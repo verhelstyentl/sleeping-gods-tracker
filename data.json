@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T20:38:14.869Z",
+  "updatedAt": "2026-11-20T21:07:38.592Z",
   "keywords": [
     {
       "name": "RAID",
@@ -377,7 +377,7 @@
           "keywords": [
             "AMBROSIA"
           ],
-          "done": false,
+          "done": true,
           "note": ""
         },
         {
@@ -386,11 +386,16 @@
           "note": ""
         }
       ],
-      "adventures": [],
-      "notes": "",
+      "adventures": [
+        {
+          "card": "34",
+          "name": "Meecra's Harp"
+        }
+      ],
+      "notes": "Fire beetles, Build bridge\nRiddle answer: STORM (correct)\nKeyword JOURNAL",
       "dungeonDone": false,
       "created": "2026-11-20T19:23:46.115Z",
-      "updated": "2026-11-20T19:23:46.115Z"
+      "updated": "2026-11-20T21:07:38.587Z"
     },
     {
       "id": "8d3k6wch",
