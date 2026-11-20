@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T21:17:17.968Z",
+  "updatedAt": "2026-11-20T21:53:49.937Z",
   "keywords": [
     {
       "name": "RAID",
@@ -89,7 +89,7 @@
     {
       "name": "COBRA",
       "quest": "112",
-      "done": false,
+      "done": true,
       "gainedAt": "96",
       "note": ""
     },
@@ -547,6 +547,18 @@
       "dungeonDone": false,
       "created": "2026-11-20T21:17:17.963Z",
       "updated": "2026-11-20T21:17:17.963Z"
+    },
+    {
+      "id": "9o4x6e4d",
+      "number": "1",
+      "name": "",
+      "atlasPage": "",
+      "options": [],
+      "adventures": [],
+      "notes": "Story 1 (end of event deck)",
+      "dungeonDone": false,
+      "created": "2026-11-20T21:53:49.934Z",
+      "updated": "2026-11-20T21:53:49.934Z"
     }
   ]
 }
