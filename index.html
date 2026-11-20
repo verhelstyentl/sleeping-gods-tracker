@@ -701,7 +701,7 @@ const VIEWS = { overview: viewOverview, locations: viewLocations, keywords: view
 function render() {
   const have = owned();
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.v === tab));
-  const counts = { locations: data.locations.length, keywords: data.keywords.length };
+  const counts = { locations: data.locations.length, keywords: data.keywords.filter(k => !k.done).length };
   document.querySelectorAll('[data-count]').forEach(el => { el.textContent = counts[el.dataset.count]; });
   $('#view').innerHTML = VIEWS[tab](have);
   $('#kwAll').innerHTML = [...new Set([...have.keys(), ...wantedKeywords(have).map(w => w.name)])].sort()
