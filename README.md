@@ -19,7 +19,7 @@ Status is worked out automatically:
 | Needs keyword | Options remain, but each one needs a keyword we don't have yet. |
 | Done | Every option is ticked off. |
 
-Locations can be sorted by number, atlas page, status, recently added or recently modified (saving a location or ticking one of its options or its dungeon counts as a change).
+Locations are listed most recently added first; the Sort buttons switch to recently modified, number, atlas page or status (saving a location or ticking one of its options or its dungeon counts as a change).
 
 The overview lists locations we can go back to, the adventure cards we've collected, the keywords we're still looking for, and open quests by card number.
 

@@ -119,11 +119,12 @@ main { width: 100%; max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; 
 .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
 .search { flex: 1 1 220px; min-width: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .search.short { flex: 0 1 150px; }
-select { padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.search.narrow { flex: 0 1 190px; }
 .seg { display: inline-flex; max-width: 100%; overflow-x: auto; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
 .seg button { border: 0; background: none; padding: 6px 10px; border-radius: 7px; font-size: .9rem; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
 .seg button.active { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
 .seg .n { color: var(--muted); font-size: .8rem; margin-left: 2px; }
+.seg .lbl { align-self: center; padding: 0 6px 0 8px; color: var(--muted); font-size: .8rem; }
 
 /* Keywords, numbers, status */
 .kw { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 6px; font: 700 .72rem/1.3 Cinzel, serif; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
@@ -243,7 +244,9 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
   .fields { grid-template-columns: 1fr 1fr; }
   .fields .wide { grid-column: 1 / -1; }
   .rows li, .rows li[data-kind=adv] { grid-template-columns: auto 1fr auto; grid-template-areas: "chk main x" ". extra extra"; }
-  .search.short { flex: 1 1 120px; }
+  .search.short, .search.narrow { flex: 1 1 120px; }
+  .seg button { padding: 6px 8px; }
+  .seg .lbl { padding: 0 3px 0 5px; }
   .kwtable, .kwtable tbody { display: block; }
   .kwtable thead { display: none; }
   .kwtable tr { display: grid; grid-template-columns: auto 1fr auto auto; grid-template-areas: "tick kw card edit" ". gained gained gained" ". used used used" ". note note note"; align-items: center; gap: 4px 10px; padding: 10px 12px; border-top: 1px solid var(--line); }
@@ -372,7 +375,7 @@ let dirty = false;
 let saving = false;
 let queuedSave = null; // commit message of a save requested while another was running
 let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
-const ui = { q: '', status: 'all', sort: 'number' };
+const ui = { q: '', status: 'all', sort: 'added' };
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -638,12 +641,12 @@ function viewLocations(have) {
   data.locations.forEach(l => counts[locationStatus(l, have)]++);
   const seg = ['all', 'ready', 'locked', 'cleared'].map(s =>
     `<button data-action="status" data-v="${s}" class="${ui.status === s ? 'active' : ''}">${s === 'all' ? 'All' : STATUS[s]} <span class="n">${counts[s]}</span></button>`).join('');
-  const sorts = [['number', 'By number'], ['atlas', 'By atlas page'], ['status', 'By status'], ['added', 'Recently added'], ['modified', 'Recently modified']]
-    .map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('');
+  const sorts = [['added', 'Added'], ['modified', 'Modified'], ['number', 'Number'], ['atlas', 'Atlas'], ['status', 'Status']]
+    .map(([v, l]) => `<button data-action="sort" data-v="${v}" class="${ui.sort === v ? 'active' : ''}">${l}</button>`).join('');
   return `<div class="toolbar">
-      <input class="search" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
+      <input class="search narrow" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search… (#12 = exact)" title="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
       <div class="seg" role="group" aria-label="Filter by status">${seg}</div>
-      <select data-input="sort" aria-label="Sort">${sorts}</select>
+      <div class="seg" role="group" aria-label="Sort"><span class="lbl" aria-hidden="true">Sort</span>${sorts}</div>
       ${editing() ? '<button class="btn primary" data-action="new-loc">+ Location</button>' : ''}
     </div>
     <div id="locList">${locList(have)}</div>`;
@@ -1028,6 +1031,7 @@ async function load() {
 const actions = {
   tab(el) { tab = el.dataset.v; history.replaceState(null, '', '#' + tab); render(); window.scrollTo(0, 0); },
   status(el) { ui.status = el.dataset.v; render(); },
+  sort(el) { ui.sort = el.dataset.v; render(); },
   'goto-loc'(el) {
     const loc = findLoc(el.dataset.loc);
     $('dialog[open]')?.close();
@@ -1102,10 +1106,6 @@ document.addEventListener('input', e => {
   if (e.target === $('#locForm').elements.number) suggestFromMap();
   if (e.target.name === 'qkw') suggestCard(e.target.closest('li'));
   if (e.target.name === 'qcard' || e.target.name === 'notes') e.target.dataset.auto = '';
-});
-
-document.addEventListener('change', e => {
-  if (e.target.dataset.input === 'sort') { ui.sort = e.target.value; $('#locList').innerHTML = locList(owned()); }
 });
 
 document.addEventListener('submit', async e => {
