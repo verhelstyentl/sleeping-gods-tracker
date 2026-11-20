@@ -367,6 +367,7 @@ let conn = null;
 let remoteSha = null;
 let dirty = false;
 let saving = false;
+let queuedSave = null; // commit message of a save requested while another was running
 let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
 const ui = { q: '', status: 'all', sort: 'number' };
 
@@ -387,7 +388,7 @@ const fmtDate = d => new Date(d).toLocaleString(undefined, { dateStyle: 'medium'
 const editing = () => mode !== 'view';
 
 function emptyData() {
-  return { version: 3, updatedAt: null, keywords: [], locations: [] };
+  return { version: 4, updatedAt: null, keywords: [], locations: [] };
 }
 
 // A quest is a keyword plus its quest card number; gainedAt links it to the location that gave it.
@@ -396,8 +397,8 @@ function migrate(d) {
   const locations = (d.locations ?? []).map(l => {
     const number = locNumber(l.number ?? '');
     let notes = l.notes ?? '';
-    // Version 3 started noting ports; add the note once to ports logged before that.
-    if ((d.version ?? 1) < 3 && portNote(number) && !/\bport\b/i.test(notes)) notes = [portNote(number), notes].filter(Boolean).join('\n');
+    // Version 4 notes ports and other map notes; add them once to locations logged before that.
+    if ((d.version ?? 1) < 4) notes = [...mapNotes(number).filter(m => !notes.toLowerCase().includes(m.toLowerCase())), notes].filter(Boolean).join('\n');
     // Version 1 stored quests on the location; fold them into the keyword list.
     for (const q of l.quests ?? []) {
       const name = norm(q.keyword);
@@ -421,7 +422,7 @@ function migrate(d) {
       updated: l.updated ?? '',
     };
   });
-  return { version: 3, updatedAt: d.updatedAt ?? null, keywords, locations };
+  return { version: 4, updatedAt: d.updatedAt ?? null, keywords, locations };
 }
 
 // ---------- Derived state ----------
@@ -432,7 +433,8 @@ const cardNumber = s => String(s).trim().replace(/^#/, '');
 const mapEntry = n => atlas[locNumber(n)] ?? {};
 const atlasOf = loc => loc.atlasPage || mapEntry(loc.number).page || '';
 const hasDungeon = loc => !!mapEntry(loc.number).dungeon;
-const portNote = n => mapEntry(n).port ? `Port: ${mapEntry(n).name}` : '';
+// Notes a location starts with, from the map: its port and any extra note (e.g. 188's zoo).
+const mapNotes = n => [mapEntry(n).port && `Port: ${mapEntry(n).name}`, mapEntry(n).note].filter(Boolean);
 
 function optionState(o, have) {
   if (o.done) return 'done';
@@ -722,10 +724,12 @@ function toast(msg) {
 
 // ---------- Mutations ----------
 
-function commit() {
+// Passing a message saves to GitHub right away, with that message as the commit message.
+function commit(message) {
   dirty = true;
   store.set(LS.draft, JSON.stringify({ data, at: Date.now() }));
   render();
+  if (message && mode === 'github') save(message);
 }
 
 const findLoc = id => data.locations.find(l => l.id === id);
@@ -736,7 +740,7 @@ function addKeyword(name, gainedAt = '', quest = '') {
   if (!n) return false;
   if (data.keywords.some(k => k.name === n)) { toast(`${n} is already in the list`); return false; }
   data.keywords.push({ name: n, quest: cardNumber(quest), done: false, gainedAt: locNumber(gainedAt), note: '' });
-  commit();
+  commit(`Add keyword ${n}`);
   toast(`Added ${n}`);
   return true;
 }
@@ -812,9 +816,9 @@ function suggestFromMap() {
   el.atlasPage.placeholder = m.page ? `${m.page} (from map)` : '';
   el.locName.placeholder = m.name ? `${m.name} (from map)` : 'Optional';
   $('#dungeonField').hidden = !m.dungeon;
-  // Ports start their notes with "Port: <name>", unless the notes were already written.
+  // Notes start with the map's notes for this location, unless they were already written.
   if (!el.notes.value || el.notes.dataset.auto) {
-    el.notes.value = portNote(el.number.value);
+    el.notes.value = mapNotes(el.number.value).join('\n');
     el.notes.dataset.auto = el.notes.value ? '1' : '';
   }
 }
@@ -851,7 +855,7 @@ function saveLocDialog() {
     Object.assign(k, q, { quest: q.quest || k.quest, gainedAt: number });
   }
   if (i >= 0) data.locations[i] = loc; else data.locations.push(loc);
-  commit();
+  commit(`${i >= 0 ? 'Edit' : 'Add'} location #${number}`);
   return true;
 }
 
@@ -882,7 +886,7 @@ function saveKwDialog() {
   k.quest = cardNumber(f.elements.quest.value);
   k.gainedAt = locNumber(f.elements.gainedAt.value);
   k.note = f.elements.note.value.trim();
-  commit();
+  commit(`Edit keyword ${k.name}`);
   return true;
 }
 
@@ -954,7 +958,8 @@ async function connect(c) {
   render();
 }
 
-async function save() {
+async function save(message = 'Update campaign tracker') {
+  if (saving) { queuedSave = message; return; }
   data.updatedAt = new Date().toISOString();
   const json = JSON.stringify(data, null, 2) + '\n';
   if (mode === 'local') {
@@ -975,7 +980,7 @@ async function save() {
   try {
     const res = await gh(`/repos/${conn.owner}/${conn.repo}/contents/${CONFIG.path}`, {
       method: 'PUT',
-      body: JSON.stringify({ message: 'Update campaign tracker', content: b64encode(json), branch: conn.branch, ...(remoteSha ? { sha: remoteSha } : {}) }),
+      body: JSON.stringify({ message, content: b64encode(json), branch: conn.branch, ...(remoteSha ? { sha: remoteSha } : {}) }),
     });
     remoteSha = res.content.sha;
     dirty = false;
@@ -986,6 +991,7 @@ async function save() {
   } finally {
     saving = false;
     renderChrome();
+    if (queuedSave) { const next = queuedSave; queuedSave = null; save(next); }
   }
 }
 
@@ -1044,7 +1050,7 @@ const actions = {
     if (!confirm(`Delete location #${loc.number}${loc.name ? ` (${loc.name})` : ''}? Its keywords stay in the list.`)) return;
     data.locations = data.locations.filter(l => l !== loc);
     $('#locDialog').close();
-    commit();
+    commit(`Delete location #${loc.number}`);
   },
   'edit-kw'(el) { openKwDialog(el.dataset.kw); },
   'delete-kw'() {
@@ -1052,7 +1058,7 @@ const actions = {
     if (!confirm(`Remove ${name} from the keywords we have? Locations that need it will show it as missing again.`)) return;
     data.keywords = data.keywords.filter(k => k.name !== name);
     $('#kwDialog').close();
-    commit();
+    commit(`Remove keyword ${name}`);
   },
   'got-kw'(el) { addKeyword(el.dataset.kw); },
   'close-dialog'(el) { el.closest('dialog').close(); },

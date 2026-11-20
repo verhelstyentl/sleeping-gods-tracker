@@ -9,7 +9,7 @@ A single-page tracker for our Sleeping Gods campaign: the keywords we have, the 
 ## What it tracks
 
 - **Keywords & quests**: every quest is a keyword plus its quest card number (leave the number empty if you don't know it yet). Each keyword records the location it was gained at and the locations whose options use it. Tick a keyword off when its quest is complete; a completed keyword still counts as one we have.
-- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location can also hold **adventure cards**, each with a card number and a name. Locations with a dungeon (Dungeons expansion: 52, 92, 104, 146, 181, 217) get a dungeon marker automatically, with a tick for when the dungeon is done. Ports (the 20 places with a building icon on the map, e.g. 130 Zikura Trading Post) get `Port: <name>` at the top of their notes when you add them. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
+- **Locations** by number, with an optional name and atlas page. Each location has **options**: an option that needs one or more keywords, or an option with no keyword (`none`). Tick an option off once you've done it. A location can also hold **adventure cards**, each with a card number and a name. Locations with a dungeon (Dungeons expansion: 52, 92, 104, 146, 181, 217) get a dungeon marker automatically, with a tick for when the dungeon is done. Ports (the 20 places with a building icon on the map, e.g. 130 Zikura Trading Post) get `Port: <name>` at the top of their notes when you add them, and 188 gets `Zoo (marketplace)`. A location also lists the quests (keywords) gained there; you can add them from the location's edit screen.
 
 Status is worked out automatically:
 
@@ -35,7 +35,7 @@ The overview lists locations we can go back to, the adventure cards we've collec
    - Repository access: **Only select repositories** → this repository
    - Permissions → Repository permissions → **Contents: Read and write**
 2. On the site, click **Editor login** at the bottom and paste the token. The owner and repository are filled in automatically when the site runs on `github.io`.
-3. Make changes, then click **Save**. That commits `data.json`, and viewers see the update within a minute or two.
+3. Adding, editing or deleting a location or keyword saves straight away. Ticking boxes is saved when you click **Save**. Every save commits `data.json`, and viewers see the update within a minute or two.
 
 The token is stored only in the editor's browser. Unsaved changes are kept as a draft in that browser until you save them. Use **Log out** in the footer to remove the token.
 
