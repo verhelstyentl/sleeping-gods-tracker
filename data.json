@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-11-20T08:55:09.223Z",
+  "updatedAt": "2026-11-20T08:56:12.119Z",
   "keywords": [
     {
       "name": "RAID",
@@ -129,7 +129,7 @@
       ],
       "notes": "",
       "dungeonDone": false,
-      "created": "",
+      "created": "2026-11-13T21:30:00.000Z",
       "updated": "2026-11-19T20:22:34.105Z"
     },
     {
@@ -211,7 +211,7 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
-      "created": "2026-11-13T21:30:00.000Z",
+      "created": "2026-11-13T21:45:00.000Z",
       "updated": ""
     },
     {
@@ -285,7 +285,7 @@
       "adventures": [],
       "notes": "We chose option B: Defend.",
       "dungeonDone": false,
-      "created": "2026-11-13T21:45:00.000Z",
+      "created": "2026-11-13T22:00:00.000Z",
       "updated": ""
     }
   ]
