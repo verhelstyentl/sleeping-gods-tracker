@@ -2,7 +2,7 @@
 
 A single-page tracker for our Sleeping Gods campaign: the keywords we have, the locations we visited and the keyword options they offer, and the quests they gave us.
 
-- `index.html` is the whole app (no build step).
+- `index.html` and `app.js` are the whole app (no build step). The Content-Security-Policy in `index.html` only lets scripts load from this site (no inline scripts or `onclick` handlers) and only lets the page connect to this site and the GitHub API; update it if you add an external script or service.
 - `data.json` holds the campaign data. Every save from the page commits this file.
 - `atlas.json` maps every location number on the map to its atlas page and, for named places, its name, e.g. `"130": { "page": "2", "name": "Zikura Trading Post", "port": true }`, with `"dungeon": true` on the six dungeon locations. When you add a location, the page and name are filled in from this file unless you type your own. The data was extracted from the fan-made Sleeping Gods map PDF on BoardGameGeek and checked against the Sleeping Gods Complete Map guide on Scribd: 204 locations, including the `R`-numbered ones.
 
