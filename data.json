@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-21T07:39:09.349Z",
+  "updatedAt": "2026-11-21T07:45:40.822Z",
   "keywords": [
     {
       "name": "RAID",
@@ -111,6 +111,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T20:00:00.000Z"
+      ],
       "created": "2026-11-13T20:00:00.000Z",
       "updated": ""
     },
@@ -143,6 +146,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T20:45:00.000Z"
+      ],
       "created": "2026-11-13T20:45:00.000Z",
       "updated": ""
     },
@@ -168,6 +174,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T21:15:00.000Z"
+      ],
       "created": "2026-11-13T21:15:00.000Z",
       "updated": ""
     },
@@ -185,6 +194,9 @@
       ],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T21:30:00.000Z"
+      ],
       "created": "2026-11-13T21:30:00.000Z",
       "updated": "2026-11-19T20:22:34.105Z"
     },
@@ -210,6 +222,9 @@
       ],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T20:30:00.000Z"
+      ],
       "created": "2026-11-13T20:30:00.000Z",
       "updated": "2026-11-19T20:03:11.482Z"
     },
@@ -242,6 +257,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T19:30:00.000Z"
+      ],
       "created": "2026-11-13T19:30:00.000Z",
       "updated": ""
     },
@@ -267,6 +285,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T21:45:00.000Z"
+      ],
       "created": "2026-11-13T21:45:00.000Z",
       "updated": ""
     },
@@ -292,6 +313,9 @@
       "adventures": [],
       "notes": "Port: Zikura Trading Post",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T20:15:00.000Z"
+      ],
       "created": "2026-11-13T20:15:00.000Z",
       "updated": ""
     },
@@ -317,6 +341,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T21:00:00.000Z"
+      ],
       "created": "2026-11-13T21:00:00.000Z",
       "updated": ""
     },
@@ -329,6 +356,9 @@
       "adventures": [],
       "notes": "We chose option B: Fight.\nWe may explore location 63 (Last Hope).",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T19:45:00.000Z"
+      ],
       "created": "2026-11-13T19:45:00.000Z",
       "updated": ""
     },
@@ -341,6 +371,9 @@
       "adventures": [],
       "notes": "We chose option B: Defend.",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-13T22:00:00.000Z"
+      ],
       "created": "2026-11-13T22:00:00.000Z",
       "updated": ""
     },
@@ -371,6 +404,9 @@
       ],
       "notes": "Right\nRight",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T19:20:37.117Z"
+      ],
       "created": "2026-11-20T19:20:37.117Z",
       "updated": "2026-11-20T19:20:37.117Z"
     },
@@ -401,6 +437,10 @@
       ],
       "notes": "Fire beetles, Build bridge\nRiddle answer: STORM (correct)\nKeyword JOURNAL",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T19:23:46.115Z",
+        "2026-11-21T07:45:40.818Z"
+      ],
       "created": "2026-11-20T19:23:46.115Z",
       "updated": "2026-11-20T21:07:38.587Z"
     },
@@ -447,6 +487,9 @@
       "adventures": [],
       "notes": "Port: Alzarria\nChose remove BARNACLE => Removed Adventure Card 36\n> None => GRANDCHILDREN\nVisited Bazaar\nVisited city streets",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T19:45:20.745Z"
+      ],
       "created": "2026-11-20T19:45:20.745Z",
       "updated": "2026-11-21T07:33:51.064Z"
     },
@@ -479,6 +522,9 @@
       "adventures": [],
       "notes": "Zoo (marketplace)\nNone =>\nRequires keyword ZOO\nor Dinosaur Egg Token",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T20:02:05.864Z"
+      ],
       "created": "2026-11-20T20:02:05.864Z",
       "updated": "2026-11-21T07:39:09.347Z"
     },
@@ -491,6 +537,9 @@
       "adventures": [],
       "notes": "Bought Painting",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T20:08:27.404Z"
+      ],
       "created": "2026-11-20T20:08:27.404Z",
       "updated": "2026-11-20T20:09:31.501Z"
     },
@@ -516,6 +565,9 @@
       "adventures": [],
       "notes": "",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T20:34:30.081Z"
+      ],
       "created": "2026-11-20T20:34:30.081Z",
       "updated": "2026-11-20T20:34:30.081Z"
     },
@@ -541,6 +593,9 @@
       "adventures": [],
       "notes": "Take the offer",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T20:38:14.863Z"
+      ],
       "created": "2026-11-20T20:38:14.863Z",
       "updated": "2026-11-20T20:38:14.863Z"
     },
@@ -566,6 +621,9 @@
       "adventures": [],
       "notes": "Help Thoazac",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T21:17:17.963Z"
+      ],
       "created": "2026-11-20T21:17:17.963Z",
       "updated": "2026-11-20T21:17:17.963Z"
     },
@@ -578,6 +636,9 @@
       "adventures": [],
       "notes": "Story 1 (end of event deck)",
       "dungeonDone": false,
+      "visits": [
+        "2026-11-20T21:53:49.934Z"
+      ],
       "created": "2026-11-20T21:53:49.934Z",
       "updated": "2026-11-20T21:53:49.934Z"
     }
