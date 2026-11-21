@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-21T07:33:51.069Z",
+  "updatedAt": "2026-11-21T07:39:09.349Z",
   "keywords": [
     {
       "name": "RAID",
@@ -467,13 +467,20 @@
           "keywords": [],
           "done": true,
           "note": ""
+        },
+        {
+          "keywords": [
+            "ZOO"
+          ],
+          "done": false,
+          "note": "Under option none"
         }
       ],
       "adventures": [],
       "notes": "Zoo (marketplace)\nNone =>\nRequires keyword ZOO\nor Dinosaur Egg Token",
       "dungeonDone": false,
       "created": "2026-11-20T20:02:05.864Z",
-      "updated": "2026-11-20T20:07:41.914Z"
+      "updated": "2026-11-21T07:39:09.347Z"
     },
     {
       "id": "0z1qyb1s",
