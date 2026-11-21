@@ -204,7 +204,7 @@ button.tick:hover { border-color: var(--accent); }
 .card li.done .chips { text-decoration: line-through; opacity: .5; }
 .card .note { font-size: .88rem; color: var(--ink-2); }
 .card .notes { margin: 4px 0 0; padding-top: 8px; border-top: 1px dashed var(--line); font-size: .9rem; color: var(--ink-2); white-space: pre-wrap; }
-.card .link { align-self: flex-start; margin-top: 4px; }
+.card .actions { display: flex; gap: 16px; margin-top: 4px; }
 
 /* Dialogs */
 dialog { width: min(680px, calc(100vw - 24px)); max-height: calc(100vh - 32px); padding: 0; border: 0; border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
@@ -226,6 +226,7 @@ legend { padding: 0 6px; font-size: .85rem; font-weight: 700; }
 #dungeonField .c-chk { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 #dungeonField .c-chk input { flex: none; width: 18px; height: 18px; accent-color: var(--ready); }
 .rows li[data-kind=adv] { grid-template-columns: auto 130px 1fr auto; }
+.rows li[data-kind=visit] { grid-template-columns: minmax(0, 240px) auto; grid-template-areas: "main x"; justify-content: start; }
 .rows .c-chk { grid-area: chk; display: flex; align-items: center; gap: 4px; font-size: .85rem; }
 .rows .c-chk input { width: 18px; height: 18px; accent-color: var(--ready); }
 .rows .c-main { grid-area: main; display: flex; align-items: center; gap: 6px; }
@@ -291,6 +292,11 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
       <label class="field">Atlas page<input name="atlasPage" inputmode="numeric" autocomplete="off"></label>
       <label class="field wide">Name<input name="locName" autocomplete="off" placeholder="Optional"></label>
     </div>
+    <fieldset>
+      <legend>Visits</legend>
+      <ul class="rows" id="visitRows"></ul>
+      <div class="rowbtns"><button type="button" class="btn sm" data-action="add-visit">+ Visit</button></div>
+    </fieldset>
     <fieldset>
       <legend>Options</legend>
       <ul class="rows" id="optRows"></ul>
@@ -380,7 +386,7 @@ let dirty = false;
 let saving = false;
 let queuedSave = null; // commit message of a save requested while another was running
 let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
-const ui = { q: '', status: 'all', sort: 'added' };
+const ui = { q: '', status: 'all', sort: 'visited' };
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -396,6 +402,8 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const num = v => (v === '' || v == null || isNaN(v)) ? Infinity : Number(v);
 const byNumber = (a, b) => String(a.number).localeCompare(String(b.number), undefined, { numeric: true });
 const fmtDate = d => new Date(d).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+// A datetime-local input wants local time without a zone, e.g. 2026-11-20T21:30.
+const localInput = d => { const t = new Date(d); return new Date(t - t.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
 const editing = () => mode !== 'view';
 
 function emptyData() {
@@ -429,6 +437,8 @@ function migrate(d) {
       adventures: (l.adventures ?? []).map(a => ({ card: cardNumber(a.card ?? ''), name: a.name ?? a.note ?? '' })).filter(a => a.card),
       notes,
       dungeonDone: !!l.dungeonDone,
+      // Visits came after locations; until then, adding a location meant we had just been there.
+      visits: (l.visits ?? [l.created]).filter(Boolean).sort(),
       created: l.created ?? '',
       updated: l.updated ?? '',
     };
@@ -444,6 +454,7 @@ const cardNumber = s => String(s).trim().replace(/^#/, '');
 const mapEntry = n => atlas[locNumber(n)] ?? {};
 const atlasOf = loc => loc.atlasPage || mapEntry(loc.number).page || '';
 const hasDungeon = loc => !!mapEntry(loc.number).dungeon;
+const lastVisit = loc => loc.visits.at(-1) ?? '';
 // Notes a location starts with, from the map: its port and any extra note (e.g. 188's zoo).
 const mapNotes = n => [mapEntry(n).port && `Port: ${mapEntry(n).name}`, mapEntry(n).note].filter(Boolean);
 
@@ -587,8 +598,10 @@ function viewOverview(have) {
 
 function locCard(loc, have) {
   const st = locationStatus(loc, have);
-  const time = ui.sort === 'added' ? loc.created : ui.sort === 'modified' ? loc.updated || loc.created : '';
-  const sub = [atlasOf(loc) && `Atlas p. ${esc(atlasOf(loc))}`, time && `${ui.sort === 'added' ? 'added' : 'edited'} ${fmtDate(time)}`].filter(Boolean).join(' · ');
+  const n = loc.visits.length;
+  const when = ui.sort === 'added' ? loc.created && `added ${fmtDate(loc.created)}`
+    : ui.sort === 'visited' && n ? `${n > 1 ? `${n} visits, last` : 'visited'} ${fmtDate(lastVisit(loc))}` : '';
+  const sub = [atlasOf(loc) && `Atlas p. ${esc(atlasOf(loc))}`, when].filter(Boolean).join(' · ');
   const opts = loc.options.map((o, i) => {
     const s = optionState(o, have);
     return `<li class="${s}">
@@ -618,7 +631,10 @@ function locCard(loc, have) {
       <span class="dgn">Dungeon</span>${loc.dungeonDone ? '' : '<span class="avail">can be done</span>'}
     </li></ul>` : ''}
     ${loc.notes ? `<p class="notes">${esc(loc.notes)}</p>` : ''}
-    ${editing() ? `<button class="link" data-action="edit-loc" data-loc="${loc.id}">Edit</button>` : ''}
+    ${editing() ? `<div class="actions">
+      <button class="link" data-action="edit-loc" data-loc="${loc.id}">Edit</button>
+      <button class="link" data-action="visit" data-loc="${loc.id}" title="We were here again: log a visit now">Log visit</button>
+    </div>` : ''}
   </article>`;
 }
 
@@ -630,8 +646,8 @@ function locList(have) {
   const newest = time => (a, b) => (time(b) || '').localeCompare(time(a) || '') || index.get(b) - index.get(a);
   const sorters = {
     number: byNumber,
+    visited: newest(lastVisit),
     added: newest(l => l.created),
-    modified: newest(l => l.updated || l.created),
     atlas: (a, b) => (num(atlasOf(a)) - num(atlasOf(b))) || byNumber(a, b),
     status: (a, b) => (STATUS_ORDER[status(a)] - STATUS_ORDER[status(b)]) || byNumber(a, b),
   };
@@ -646,7 +662,7 @@ function viewLocations(have) {
   data.locations.forEach(l => counts[locationStatus(l, have)]++);
   const seg = ['all', 'ready', 'locked', 'cleared'].map(s =>
     `<button data-action="status" data-v="${s}" class="${ui.status === s ? 'active' : ''}">${s === 'all' ? 'All' : STATUS[s]} <span class="n">${counts[s]}</span></button>`).join('');
-  const sorts = [['added', 'Added'], ['modified', 'Modified'], ['number', 'Number'], ['atlas', 'Atlas'], ['status', 'Status']]
+  const sorts = [['visited', 'Visited'], ['added', 'Added'], ['number', 'Number'], ['atlas', 'Atlas'], ['status', 'Status']]
     .map(([v, l]) => `<button data-action="sort" data-v="${v}" class="${ui.sort === v ? 'active' : ''}">${l}</button>`).join('');
   return `<div class="toolbar fill">
       <input class="search" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search… (#12 = exact)" title="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
@@ -779,6 +795,12 @@ const advRowHtml = a => `<li data-kind="adv">
   <button type="button" class="c-x" data-action="remove-row" aria-label="Remove">✕</button>
 </li>`;
 
+// The row keeps the exact timestamp, so saving doesn't round untouched visits to the minute.
+const visitRowHtml = iso => `<li data-kind="visit" data-iso="${esc(iso)}">
+  <span class="c-main"><input type="datetime-local" name="visit" value="${localInput(iso)}" aria-label="Visited at"></span>
+  <button type="button" class="c-x" data-action="remove-row" aria-label="Remove">✕</button>
+</li>`;
+
 const questRowHtml = k => `<li data-kind="quest">
   <label class="c-chk"><input type="checkbox" name="done" ${k.done ? 'checked' : ''}>Done</label>
   <span class="c-main"><input name="qkw" list="kwAll" autocomplete="off" value="${esc(k.name)}" placeholder="KEYWORD" aria-label="Keyword"></span>
@@ -804,6 +826,8 @@ function openLocDialog(id) {
   el.notes.dataset.auto = '';
   el.dungeonDone.checked = !!loc?.dungeonDone;
   suggestFromMap();
+  // A new location is one we're visiting now.
+  $('#visitRows').innerHTML = (loc ? loc.visits : [new Date().toISOString()]).map(visitRowHtml).join('');
   $('#optRows').innerHTML = (loc?.options ?? []).map(o => optRowHtml(o, o.keywords.length ? 'kw' : 'none')).join('');
   $('#advRows').innerHTML = (loc?.adventures ?? []).map(advRowHtml).join('');
   $('#questRows').innerHTML = (loc ? questsAt(loc).sort(byQuest) : []).map(questRowHtml).join('');
@@ -853,8 +877,12 @@ function saveLocDialog() {
   const quests = [...$('#questRows').children]
     .map(li => ({ name: norm(field(li, 'qkw').value), quest: cardNumber(field(li, 'qcard').value), done: field(li, 'done').checked }))
     .filter(q => q.name);
+  const visits = [...$('#visitRows').children].map(li => {
+    const v = field(li, 'visit').value;
+    return !v ? '' : v === localInput(li.dataset.iso) ? li.dataset.iso : new Date(v).toISOString();
+  }).filter(Boolean).sort();
   const m = mapEntry(number);
-  const loc = { id: id || uid(), number, name: el.locName.value.trim() || m.name || '', atlasPage: el.atlasPage.value.trim() || m.page || '', options, adventures, notes: el.notes.value.trim(), dungeonDone: !!m.dungeon && el.dungeonDone.checked };
+  const loc = { id: id || uid(), number, name: el.locName.value.trim() || m.name || '', atlasPage: el.atlasPage.value.trim() || m.page || '', options, adventures, notes: el.notes.value.trim(), dungeonDone: !!m.dungeon && el.dungeonDone.checked, visits };
   const i = data.locations.findIndex(l => l.id === loc.id);
   const now = new Date().toISOString();
   Object.assign(loc, { created: i >= 0 ? data.locations[i].created : now, updated: now });
@@ -1054,6 +1082,13 @@ const actions = {
   'add-opt'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'kw')); },
   'add-none'() { appendRow($('#optRows'), optRowHtml({ keywords: [], done: false, note: '' }, 'none')); },
   'toggle-dungeon'(el) { const loc = findLoc(el.dataset.loc); loc.dungeonDone = !loc.dungeonDone; touch(loc); },
+  visit(el) {
+    const loc = findLoc(el.dataset.loc);
+    loc.visits.push(new Date().toISOString());
+    commit(`Visit location #${loc.number}`);
+    toast(`Logged a visit to #${loc.number}`);
+  },
+  'add-visit'() { appendRow($('#visitRows'), visitRowHtml(new Date().toISOString())); },
   'add-adv'() { appendRow($('#advRows'), advRowHtml({ card: '', name: '' })); },
   'add-quest'() { appendRow($('#questRows'), questRowHtml({ name: '', quest: '', done: false })); },
   'remove-row'(el) { el.closest('li').remove(); },

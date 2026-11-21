@@ -19,7 +19,9 @@ Status is worked out automatically:
 | Needs keyword | Options remain, but each one needs a keyword we don't have yet. |
 | Done | Every option is ticked off. |
 
-Locations are listed most recently added first; the Sort buttons switch to recently modified, number, atlas page or status (saving a location or ticking one of its options or its dungeon counts as a change).
+Every location keeps a timestamp for each **visit**. Adding a location logs the first visit (now, unless you change the time in the dialog); **Log visit** on a location's card logs a revisit. The Visits list in the edit dialog lets you fix a time, add a visit afterwards or remove one logged by mistake. Editing a location without logging a visit doesn't count as one.
+
+Locations are listed most recently visited first; the Sort buttons switch to recently added, number, atlas page or status.
 
 The overview lists locations we can go back to, the adventure cards we've collected, the keywords we're still looking for, and open quests by card number.
 
@@ -35,7 +37,7 @@ The overview lists locations we can go back to, the adventure cards we've collec
    - Repository access: **Only select repositories** → this repository
    - Permissions → Repository permissions → **Contents: Read and write**
 2. On the site, click **Editor login** at the bottom and paste the token. The owner and repository are filled in automatically when the site runs on `github.io`.
-3. Adding, editing or deleting a location or keyword saves straight away. Ticking boxes is saved when you click **Save**. Every save commits `data.json`, and viewers see the update within a minute or two.
+3. Adding, editing or deleting a location or keyword, and logging a visit, saves straight away. Ticking boxes is saved when you click **Save**. Every save commits `data.json`, and viewers see the update within a minute or two.
 
 The token is stored only in the editor's browser. Unsaved changes are kept as a draft in that browser until you save them. Use **Log out** in the footer to remove the token.
 
