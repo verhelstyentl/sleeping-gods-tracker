@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-20T21:53:49.937Z",
+  "updatedAt": "2026-11-21T07:32:42.813Z",
   "keywords": [
     {
       "name": "RAID",
@@ -428,13 +428,20 @@
           "keywords": [],
           "done": true,
           "note": ""
+        },
+        {
+          "keywords": [
+            "GRANDCHILDREN"
+          ],
+          "done": false,
+          "note": "Under option none"
         }
       ],
       "adventures": [],
       "notes": "Port: Alzarria\nChose remove BARNACLE => Removed Adventure Card 36\n> None => GRANDCHILDREN\nVisited Bazaar\nVisited city streets",
       "dungeonDone": false,
       "created": "2026-11-20T19:45:20.745Z",
-      "updated": "2026-11-20T19:52:38.119Z"
+      "updated": "2026-11-21T07:32:42.810Z"
     },
     {
       "id": "gpe6pjc5",
