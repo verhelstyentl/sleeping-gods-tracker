@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-21T08:35:05.604Z",
+  "updatedAt": "2026-11-21T08:38:40.196Z",
   "keywords": [
     {
       "name": "RAID",
@@ -427,6 +427,13 @@
           "keywords": [],
           "done": true,
           "note": ""
+        },
+        {
+          "keywords": [
+            "JOURNAL"
+          ],
+          "done": true,
+          "note": "After riddle"
         }
       ],
       "adventures": [
@@ -446,7 +453,7 @@
         "2026-11-20T21:00:00.000Z"
       ],
       "created": "2026-11-20T19:23:46.115Z",
-      "updated": "2026-11-21T08:35:05.597Z"
+      "updated": "2026-11-21T08:38:40.188Z"
     },
     {
       "id": "8d3k6wch",
