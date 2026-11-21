@@ -1,6 +1,6 @@
 {
   "version": 4,
-  "updatedAt": "2026-11-21T08:24:31.633Z",
+  "updatedAt": "2026-11-21T08:35:05.604Z",
   "keywords": [
     {
       "name": "RAID",
@@ -433,6 +433,10 @@
         {
           "card": "34",
           "name": "Meecra's Harp"
+        },
+        {
+          "card": "40",
+          "name": "Stone of Riddles"
         }
       ],
       "notes": "Fire beetles, Build bridge\nRiddle answer: STORM (correct)\nKeyword JOURNAL",
@@ -442,7 +446,7 @@
         "2026-11-20T21:00:00.000Z"
       ],
       "created": "2026-11-20T19:23:46.115Z",
-      "updated": "2026-11-21T08:24:31.629Z"
+      "updated": "2026-11-21T08:35:05.597Z"
     },
     {
       "id": "8d3k6wch",
