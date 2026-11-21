@@ -293,11 +293,6 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
       <label class="field wide">Name<input name="locName" autocomplete="off" placeholder="Optional"></label>
     </div>
     <fieldset>
-      <legend>Visits</legend>
-      <ul class="rows" id="visitRows"></ul>
-      <div class="rowbtns"><button type="button" class="btn sm" data-action="add-visit">+ Visit</button></div>
-    </fieldset>
-    <fieldset>
       <legend>Options</legend>
       <ul class="rows" id="optRows"></ul>
       <div class="rowbtns">
@@ -320,6 +315,11 @@ code { font-size: .9em; padding: 1px 5px; border-radius: 4px; background: var(--
       <label class="c-chk"><input type="checkbox" name="dungeonDone"> This location has a dungeon (Dungeons expansion). Tick when done.</label>
     </fieldset>
     <label class="field">Notes<textarea name="notes" rows="2"></textarea></label>
+    <fieldset>
+      <legend>Visits</legend>
+      <ul class="rows" id="visitRows"></ul>
+      <div class="rowbtns"><button type="button" class="btn sm" data-action="add-visit">+ Visit</button></div>
+    </fieldset>
     <footer>
       <button type="button" class="btn danger" data-action="delete-loc">Delete location</button>
       <span class="spacer"></span>
