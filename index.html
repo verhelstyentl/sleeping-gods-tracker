@@ -122,11 +122,11 @@ main { width: 100%; max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; 
 /* Every item grows, so each row of the toolbar spans the full width of the cards below. */
 .toolbar.fill > * { flex: 1 1 auto; }
 .toolbar.fill > .search { flex: 3 1 160px; }
-.toolbar.fill .seg button { flex: 1 1 auto; }
+.toolbar.fill .seg button, .toolbar.fill .seg select { flex: 1 1 auto; }
 .toolbar.fill > .btn { flex: 0 0 auto; margin-left: auto; }
 .seg { display: inline-flex; max-width: 100%; overflow-x: auto; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
-.seg button { border: 0; background: none; padding: 6px 10px; border-radius: 7px; font-size: .9rem; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
-.seg button.active { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+.seg button, .seg select { border: 0; background: none; padding: 6px 10px; border-radius: 7px; font-size: .9rem; color: var(--ink-2); white-space: nowrap; cursor: pointer; }
+.seg button.active, .seg select.active { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
 .seg .n { color: var(--muted); font-size: .8rem; margin-left: 2px; }
 .seg .lbl { align-self: center; padding: 0 6px 0 8px; color: var(--muted); font-size: .8rem; }
 
@@ -401,7 +401,7 @@ const splitKw = s => s.split(/[,+]/).map(norm).filter(Boolean);
 const uid = () => Math.random().toString(36).slice(2, 10);
 const num = v => (v === '' || v == null || isNaN(v)) ? Infinity : Number(v);
 const byNumber = (a, b) => String(a.number).localeCompare(String(b.number), undefined, { numeric: true });
-const fmtDate = d => new Date(d).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+const fmtDate = d => new Date(d).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short', hourCycle: 'h23' });
 // A datetime-local input wants local time without a zone, e.g. 2026-11-20T21:30.
 const localInput = d => { const t = new Date(d); return new Date(t - t.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
 const editing = () => mode !== 'view';
@@ -599,8 +599,12 @@ function viewOverview(have) {
 function locCard(loc, have) {
   const st = locationStatus(loc, have);
   const n = loc.visits.length;
-  const when = ui.sort === 'added' ? loc.created && `added ${fmtDate(loc.created)}`
-    : ui.sort === 'visited' && n ? `${n > 1 ? `${n} visits, last` : 'visited'} ${fmtDate(lastVisit(loc))}` : '';
+  const edited = loc.updated || loc.created;
+  const when = {
+    visited: n && `${n > 1 ? `${n} visits, last` : 'visited'} ${fmtDate(lastVisit(loc))}`,
+    added: loc.created && `added ${fmtDate(loc.created)}`,
+    modified: edited && `edited ${fmtDate(edited)}`,
+  }[ui.sort];
   const sub = [atlasOf(loc) && `Atlas p. ${esc(atlasOf(loc))}`, when].filter(Boolean).join(' · ');
   const opts = loc.options.map((o, i) => {
     const s = optionState(o, have);
@@ -648,6 +652,7 @@ function locList(have) {
     number: byNumber,
     visited: newest(lastVisit),
     added: newest(l => l.created),
+    modified: newest(l => l.updated || l.created),
     atlas: (a, b) => (num(atlasOf(a)) - num(atlasOf(b))) || byNumber(a, b),
     status: (a, b) => (STATUS_ORDER[status(a)] - STATUS_ORDER[status(b)]) || byNumber(a, b),
   };
@@ -662,12 +667,19 @@ function viewLocations(have) {
   data.locations.forEach(l => counts[locationStatus(l, have)]++);
   const seg = ['all', 'ready', 'locked', 'cleared'].map(s =>
     `<button data-action="status" data-v="${s}" class="${ui.status === s ? 'active' : ''}">${s === 'all' ? 'All' : STATUS[s]} <span class="n">${counts[s]}</span></button>`).join('');
-  const sorts = [['visited', 'Visited'], ['added', 'Added'], ['number', 'Number'], ['atlas', 'Atlas'], ['status', 'Status']]
+  const sorts = [['visited', 'Visited'], ['number', 'Number'], ['status', 'Status']]
     .map(([v, l]) => `<button data-action="sort" data-v="${v}" class="${ui.sort === v ? 'active' : ''}">${l}</button>`).join('');
+  // Less used sorts sit in a menu, which shows "More…" until one of them is picked.
+  const more = [['added', 'Added'], ['modified', 'Modified'], ['atlas', 'Atlas']];
+  const inMore = more.some(([v]) => v === ui.sort);
+  const moreSel = `<select data-input="sort" class="${inMore ? 'active' : ''}" aria-label="More sort options">
+      <option value="" disabled hidden ${inMore ? '' : 'selected'}>More…</option>
+      ${more.map(([v, l]) => `<option value="${v}" ${ui.sort === v ? 'selected' : ''}>${l}</option>`).join('')}
+    </select>`;
   return `<div class="toolbar fill">
       <input class="search" type="search" data-input="q" value="${esc(ui.q)}" placeholder="Search… (#12 = exact)" title="Search number, name, keyword… (#12 = exact)" aria-label="Search locations">
       <div class="seg" role="group" aria-label="Filter by status">${seg}</div>
-      <div class="seg" role="group" aria-label="Sort"><span class="lbl" aria-hidden="true">Sort</span>${sorts}</div>
+      <div class="seg" role="group" aria-label="Sort"><span class="lbl" aria-hidden="true">Sort</span>${sorts}${moreSel}</div>
       ${editing() ? '<button class="btn primary" data-action="new-loc">+ Location</button>' : ''}
     </div>
     <div id="locList">${locList(have)}</div>`;
@@ -1143,6 +1155,7 @@ document.querySelectorAll('dialog').forEach(d => d.addEventListener('click', e =
 
 document.addEventListener('input', e => {
   if (e.target.dataset.input === 'q') { ui.q = e.target.value; $('#locList').innerHTML = locList(owned()); }
+  if (e.target.dataset.input === 'sort') { ui.sort = e.target.value; render(); }
   if (e.target === $('#locForm').elements.number) suggestFromMap();
   if (e.target.name === 'qkw') suggestCard(e.target.closest('li'));
   if (e.target.name === 'qcard' || e.target.name === 'notes') e.target.dataset.auto = '';

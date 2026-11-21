@@ -21,7 +21,7 @@ Status is worked out automatically:
 
 Every location keeps a timestamp for each **visit**. Adding a location logs the first visit (now, unless you change the time in the dialog); **Log visit** on a location's card logs a revisit. The Visits list in the edit dialog lets you fix a time, add a visit afterwards or remove one logged by mistake. Editing a location without logging a visit doesn't count as one.
 
-Locations are listed most recently visited first; the Sort buttons switch to recently added, number, atlas page or status.
+Locations are listed most recently visited first; the Sort buttons switch to number or status, and the **More…** menu next to them to recently added, recently modified (saving a location or ticking one of its options or its dungeon counts as a change) or atlas page. Times are shown in 24-hour format.
 
 The overview lists locations we can go back to, the adventure cards we've collected, the keywords we're still looking for, and open quests by card number.
 
